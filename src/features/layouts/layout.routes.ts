@@ -1,14 +1,11 @@
 import {Routes} from '@angular/router';
 import RoutesDefinition from '../../common/routes-definition';
+import {MainLayout} from './main-layout/main-layout';
 
 export const LAYOUT_ROUTES: Routes = [
   {
-    path: RoutesDefinition.base,
-    pathMatch: 'full',
-    redirectTo: RoutesDefinition.configurator,
-  },
-  {
-    path: RoutesDefinition.base,
+    path: '',
+    component: MainLayout,
     children: [
       {
         path: RoutesDefinition.configurator,
@@ -16,9 +13,5 @@ export const LAYOUT_ROUTES: Routes = [
           import('./../configurator/configurator.routes').then(m => m.CONFIGURATOR_ROUTES)
       }
     ]
-  },
-  {
-    path: '**',
-    redirectTo: RoutesDefinition.configurator,
   }
 ];
