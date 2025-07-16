@@ -6,7 +6,7 @@ import {RouterOutlet} from '@angular/router';
   imports: [
     RouterOutlet
   ],
-  template: '<router-outlet/>'
+  templateUrl: 'main-layout.html'
 })
 export class MainLayout {
 
