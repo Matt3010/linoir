@@ -1,8 +1,8 @@
 import {ApplicationConfig, provideBrowserGlobalErrorListeners, provideZonelessChangeDetection} from '@angular/core';
 import {provideRouter} from '@angular/router';
 import {APP_ROUTES} from './app/app.routes';
-import {WebsocketService} from './common/services/websocket.service';
 import {provideHttpClient} from '@angular/common/http';
+import {WebsocketService} from './common/services/websocket.service';
 
 
 export const appConfig: ApplicationConfig = {

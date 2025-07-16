@@ -5,7 +5,7 @@ const WebSocket = require('ws');
 
 function getLocalIp() {
   const interfaces = os.networkInterfaces();
-  for (const ifaceName of Object.keys(interfaces)) {
+  for (const ifaceName in interfaces) {
     for (const iface of interfaces[ifaceName]) {
       if (iface.family === 'IPv4' && !iface.internal) {
         return iface.address;
@@ -16,29 +16,45 @@ function getLocalIp() {
 }
 
 const localIp = getLocalIp();
+const PORT = 3333;
+const HOST = '0.0.0.0';
 
 const publicPath = path.resolve(__dirname, 'public');
 const configPath = path.join(publicPath, 'server-config.json');
 
 try {
+  if (!fs.existsSync(publicPath)) {
+    fs.mkdirSync(publicPath, {recursive: true});
+  }
   fs.writeFileSync(configPath, JSON.stringify({ip: localIp}, null, 2), 'utf-8');
   console.log(`Server config written to ${configPath}`);
 } catch (error) {
   console.error('Error writing server config:', error);
 }
 
-const wss = new WebSocket.Server({port: 3333, host: '0.0.0.0'});
+const wss = new WebSocket.Server({port: PORT, host: HOST});
 
 wss.on('connection', (ws, req) => {
-  console.log('New client connected:', req.socket.remoteAddress);
+  const clientIp = req.socket.remoteAddress;
+  console.log('New client connected:', clientIp);
 
-  ws.on('message', (message) => {
-    console.log('Message received from client:', message.toString());
-    ws.send(`Server received: ${message}`);
+  ws.on('message', (data, isBinary) => {
+    if (isBinary) {
+      console.log('Received binary data from client, length:', data.length);
+    } else {
+      const message = data.toString();
+      console.log('Received text from client:', message);
+    }
+
+    wss.clients.forEach(client => {
+      if (client.readyState === WebSocket.OPEN) {
+        client.send(data, {binary: isBinary});
+      }
+    });
   });
 
   ws.on('close', () => {
-    console.log('Client disconnected');
+    console.log('Client disconnected:', clientIp);
   });
 
   ws.on('error', (err) => {
@@ -46,4 +62,4 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-console.log(`WebSocket server running on ws://${localIp}:3333`);
+console.log(`WebSocket server running on ws://${localIp}:${PORT}`);

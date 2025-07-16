@@ -1,12 +1,13 @@
 import {Injectable} from '@angular/core';
-import {Observable, Subject} from 'rxjs';
+import {BehaviorSubject, Observable} from 'rxjs';
 
-@Injectable()
+@Injectable({
+  providedIn: "root"
+})
 export class WebsocketService {
-  private ws!: WebSocket;
-  private readonly messageSubject = new Subject<string>();
-
-  public messages$: Observable<string> = this.messageSubject.asObservable();
+  private ws: WebSocket | null = null;
+  private readonly messagesSubject = new BehaviorSubject<string[]>([]);
+  public readonly messages$: Observable<string[]> = this.messagesSubject.asObservable();
 
   connect(url: string): void {
     this.ws = new WebSocket(url);
@@ -15,13 +16,14 @@ export class WebsocketService {
       console.log('WebSocket connected');
     };
 
+
     this.ws.onmessage = (event) => {
-      this.messageSubject.next(event.data);
+      const currentMessages = this.messagesSubject.value;
+      this.messagesSubject.next([...currentMessages, event.data]);
     };
 
-    this.ws.onclose = () => {
-      console.log('WebSocket closed, reconnecting in 3s...');
-      setTimeout(() => this.connect(url), 3000);
+    this.ws.onerror = (error) => {
+      console.error('WebSocket error:', error);
     };
   }
 
