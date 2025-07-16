@@ -1,5 +1,4 @@
 const RoutesDefinition = {
-  base: '',
   configurator: 'configurator',
 };
 

@@ -3,12 +3,12 @@ import RoutesDefinition from '../common/routes-definition';
 
 export const APP_ROUTES: Routes = [
   {
-    path: RoutesDefinition.base,
+    path: '',
     redirectTo: RoutesDefinition.configurator,
     pathMatch: 'full'
   },
   {
-    path: RoutesDefinition.base,
+    path: '',
     loadChildren: () =>
       import('./../features/layouts/layout.routes').then(m => m.LAYOUT_ROUTES)
   },
