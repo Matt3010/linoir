@@ -1,5 +1,6 @@
 const RoutesDefinition = {
-  configurator: 'configurator',
+  admin: 'admin',
+  deck: 'deck',
 };
 
 export default RoutesDefinition;

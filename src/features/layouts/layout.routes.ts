@@ -8,9 +8,14 @@ export const LAYOUT_ROUTES: Routes = [
     component: MainLayout,
     children: [
       {
-        path: RoutesDefinition.configurator,
+        path: RoutesDefinition.admin,
         loadChildren: () =>
           import('./../configurator/configurator.routes').then(m => m.CONFIGURATOR_ROUTES)
+      },
+      {
+        path: RoutesDefinition.deck,
+        loadChildren: () =>
+          import('./../deck/deck.routes').then(m => m.DECK_ROUTES)
       }
     ]
   }

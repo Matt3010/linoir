@@ -4,7 +4,7 @@ import RoutesDefinition from '../common/routes-definition';
 export const APP_ROUTES: Routes = [
   {
     path: '',
-    redirectTo: RoutesDefinition.configurator,
+    redirectTo: RoutesDefinition.deck,
     pathMatch: 'full'
   },
   {
@@ -14,6 +14,6 @@ export const APP_ROUTES: Routes = [
   },
   {
     path: '**',
-    redirectTo: RoutesDefinition.configurator
+    redirectTo: RoutesDefinition.deck
   }
 ];
