@@ -10,7 +10,7 @@ export const LAYOUT_ROUTES: Routes = [
       {
         path: RoutesDefinition.admin,
         loadChildren: () =>
-          import('../configurator/admin.routes').then(m => m.CONFIGURATOR_ROUTES)
+          import('../admin/admin.routes').then(m => m.CONFIGURATOR_ROUTES)
       },
       {
         path: RoutesDefinition.deck,
