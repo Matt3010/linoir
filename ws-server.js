@@ -20,25 +20,29 @@ const localIp = getLocalIp();
 const publicPath = path.resolve(__dirname, 'public');
 const configPath = path.join(publicPath, 'server-config.json');
 
-fs.writeFileSync(configPath, JSON.stringify({ip: localIp}, null, 2), 'utf-8');
-console.log(`Server config scritto in ${configPath}`);
+try {
+  fs.writeFileSync(configPath, JSON.stringify({ip: localIp}, null, 2), 'utf-8');
+  console.log(`Server config written to ${configPath}`);
+} catch (error) {
+  console.error('Error writing server config:', error);
+}
 
 const wss = new WebSocket.Server({port: 3333, host: '0.0.0.0'});
 
 wss.on('connection', (ws, req) => {
-  console.log('Nuovo client connesso:', req.socket.remoteAddress);
+  console.log('New client connected:', req.socket.remoteAddress);
 
   ws.on('message', (message) => {
-    console.log('Messaggio ricevuto dal client:', message);
-    ws.send(`Server ha ricevuto: ${message}`);
+    console.log('Message received from client:', message.toString());
+    ws.send(`Server received: ${message}`);
   });
 
   ws.on('close', () => {
-    console.log('Client disconnesso');
+    console.log('Client disconnected');
   });
 
   ws.on('error', (err) => {
-    console.error('Errore WebSocket:', err);
+    console.error('WebSocket error:', err);
   });
 });
 

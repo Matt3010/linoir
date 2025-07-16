@@ -9,10 +9,10 @@ interface ServerConfig {
 
 @Component({
   selector: 'app-deck',
-  templateUrl: './deck.html',
-  styleUrls: ['./deck.css']
+  templateUrl: './deck.component.html',
+  styleUrls: ['./deck.component.css']
 })
-export class Deck implements OnInit, OnDestroy {
+export class DeckComponent implements OnInit, OnDestroy {
   private wsSub?: Subscription;
 
   constructor(
@@ -27,11 +27,17 @@ export class Deck implements OnInit, OnDestroy {
         const wsUrl = `ws://${config.ip}:3333`;
         this.wsService.connect(wsUrl);
 
-        this.wsSub = this.wsService.messages$.subscribe(msg => {
+        this.wsSub = this.wsService.messages$.subscribe({
+          next: (msg) => {
+            console.log('WebSocket message:', msg);
+          },
+          error: (err) => {
+            console.error('Error in WebSocket stream:', err);
+          }
         });
       },
       error: (err) => {
-        console.error('Errore caricando la configurazione:', err);
+        console.error('Error loading config:', err);
       }
     });
   }

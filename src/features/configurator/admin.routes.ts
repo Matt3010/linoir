@@ -4,6 +4,6 @@ export const CONFIGURATOR_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./../configurator/pages/configurator/configurator').then(m => m.Configurator)
+      import('./pages/admin/admin.component').then(m => m.AdminComponent)
   }
 ];

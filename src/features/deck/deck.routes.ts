@@ -4,6 +4,6 @@ export const DECK_ROUTES: Routes = [
   {
     path: '',
     loadComponent: () =>
-      import('./../deck/pages/deck/deck').then(m => m.Deck)
+      import('./pages/deck/deck.component').then(m => m.DeckComponent)
   }
 ]
