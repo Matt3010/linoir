@@ -26,18 +26,19 @@ export class PluginLoaderService {
   }
 
   async loadComponent(manifest: PluginManifest): Promise<Type<unknown>> {
-    console.log(`Caricamento del plugin ${manifest.id} con componente ${manifest.componentName}`);
-    const loader = LOCAL_PLUGIN_MAP[manifest.id];
+    console.log(`Loading plugin ${manifest.key} with component ${manifest.componentName} (scope: ${manifest.scope})`);
+    const loader = LOCAL_PLUGIN_MAP[manifest.key];
     if (!loader) {
-      throw new Error(`Plugin ${manifest.id} non trovato nella mappa statica`);
+      throw new Error(`Plugin ${manifest.key} not found in static map`);
     }
 
     const module = await loader();
     const component = module[manifest.componentName];
     if (!component) {
-      throw new Error(`Componente ${manifest.componentName} non trovato in ${manifest.id}`);
+      throw new Error(`Component ${manifest.componentName} not found in ${manifest.key}`);
     }
 
     return component;
   }
+
 }

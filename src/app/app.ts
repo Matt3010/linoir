@@ -9,7 +9,7 @@ interface ServerConfig {
 }
 
 @Component({
-  selector: 'app-root',
+  selector: 'lin-root',
   template: `
     <router-outlet/>
   `,

@@ -1,14 +1,13 @@
 import {Component} from '@angular/core';
 import {WebsocketService} from '../../../../common/services/websocket.service';
-import {AsyncPipe, JsonPipe} from '@angular/common';
+import {PluginHostComponent} from '../../../plugin-host/pages/plugin-host/plugin-host.component';
 
 
 @Component({
-  selector: 'app-kiosk',
+  selector: 'lin-kiosk',
   templateUrl: './kiosk.component.html',
   imports: [
-    AsyncPipe,
-    JsonPipe
+    PluginHostComponent
   ],
   styleUrls: ['./kiosk.component.css']
 })

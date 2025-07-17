@@ -1,5 +1,5 @@
 export interface PluginManifest {
-  id: string;
+  key: string;
   componentName: string;
   label: string;
   scope: string;

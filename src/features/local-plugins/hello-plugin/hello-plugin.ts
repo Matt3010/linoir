@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import {Component} from '@angular/core';
 
 @Component({
-  selector: 'app-hello-plugin',
+  selector: 'lin-hello-plugin',
   imports: [],
   templateUrl: './hello-plugin.html',
   styleUrl: './hello-plugin.css'

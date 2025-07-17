@@ -1,36 +1,53 @@
-import {Component, ViewChild, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, Component, input, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
 import {PluginManifest} from '../../../plugin-registry/entities/plugin-manifest';
 import {PluginLoaderService} from '../../../plugin-registry/services/plugin-loader.service';
 import {AsyncPipe} from '@angular/common';
+import {map} from 'rxjs';
 
 @Component({
-  selector: 'app-plugin-host',
+  selector: 'lin-plugin-host',
   standalone: true,
   imports: [
     AsyncPipe
   ],
   template: `
-    <h2>Plugin Host</h2>
-    <div>
-      @for (plugin of (pluginLoader.plugins$ | async); track plugin.id) {
-        <button (click)="loadPlugin(plugin)">
-          Carica {{ plugin.label }}
-        </button>
+    @if (pluginLoader.plugins$ | async) {
+      @for (plugin of pluginLoader.plugins$ | async; track $index) {
+        <ng-template #pluginContainer></ng-template>
       }
-    </div>
-    <ng-template #container></ng-template>
+    }
   `
 })
-export class PluginHostComponent {
-  @ViewChild('container', {read: ViewContainerRef}) container!: ViewContainerRef;
+export class PluginHostComponent implements AfterViewInit {
+
+  public scope = input<string | null>(null);
+
+  @ViewChildren('pluginContainer', {read: ViewContainerRef})
+  containers!: QueryList<ViewContainerRef>;
 
   constructor(protected readonly pluginLoader: PluginLoaderService) {
   }
 
-
-  async loadPlugin(manifest: PluginManifest) {
-    const component = await this.pluginLoader.loadComponent(manifest);
-    this.container.clear();
-    this.container.createComponent(component);
+  ngAfterViewInit(): void {
+    this.pluginLoader.plugins$
+      .pipe(map(plugins => {
+        if (this.scope()) {
+          return plugins.filter(plugin => plugin.scope === this.scope());
+        }
+        return plugins;
+      }))
+      .subscribe((plugins: PluginManifest[]) => {
+        (async () => {
+          for (let i = 0; i < plugins.length; i++) {
+            const manifest = plugins[i];
+            const component = await this.pluginLoader.loadComponent(manifest);
+            const container = this.containers.get(i);
+            container?.clear();
+            container?.createComponent(component);
+          }
+        })();
+      });
   }
+
+
 }

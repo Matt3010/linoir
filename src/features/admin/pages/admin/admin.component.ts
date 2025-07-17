@@ -1,9 +1,8 @@
 import {Component} from '@angular/core';
-import {WebsocketService} from '../../../../common/services/websocket.service';
 import {PluginHostComponent} from '../../../plugin-host/pages/plugin-host/plugin-host.component';
 
 @Component({
-  selector: 'app-admin',
+  selector: 'lin-admin',
   imports: [
     PluginHostComponent
   ],
@@ -11,14 +10,4 @@ import {PluginHostComponent} from '../../../plugin-host/pages/plugin-host/plugin
   styleUrl: './admin.component.css'
 })
 export class AdminComponent {
-
-  public constructor(protected readonly webSocketService: WebsocketService) {
-
-    this.webSocketService.messages$.subscribe((res) => {
-      console.log(res)
-    })
-
-  }
-
-
 }
