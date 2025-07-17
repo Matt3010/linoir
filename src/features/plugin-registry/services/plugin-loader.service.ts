@@ -2,6 +2,7 @@ import {Injectable, Type} from '@angular/core';
 import {PluginManifest} from '../entities/plugin-manifest';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
+import _ from 'lodash';
 
 const LOCAL_PLUGIN_MAP: Record<string, () => Promise<Record<string, Type<unknown>>>> = {
   'hello': () => import('../../local-plugins/hello-plugin/hello-plugin'),
@@ -19,13 +20,28 @@ export class PluginLoaderService {
     this.loadManifest()
   }
 
-  loadManifest(): void {
+  private loadManifest(): void {
     this.http.get<PluginManifest[]>('plugin-registry.json').subscribe((plugins: PluginManifest[]) => {
-      this._plugins$.next(plugins);
+      localStorage.setItem('plugin-manifest', JSON.stringify(plugins));
+      const storedPlugins: string | null = localStorage.getItem('plugin-manifest');
+      if (!storedPlugins) {
+        this._plugins$.next(plugins);
+        return;
+      }
+      const parsedPlugins: PluginManifest[] = JSON.parse(storedPlugins);
+      if (parsedPlugins.length === 0) {
+        this._plugins$.next(plugins);
+      }
+      const mergedPlugins = _.uniqBy([...plugins, ...parsedPlugins], 'key');
+      this._plugins$.next(mergedPlugins);
     });
   }
 
-  async loadComponent(manifest: PluginManifest): Promise<Type<unknown>> {
+  public reloadManifest(): void {
+    this.loadManifest();
+  }
+
+  public async loadComponent(manifest: PluginManifest): Promise<Type<unknown>> {
     console.log(`Loading plugin ${manifest.key} with component ${manifest.componentName} (scope: ${manifest.scope})`);
     const loader = LOCAL_PLUGIN_MAP[manifest.key];
     if (!loader) {
