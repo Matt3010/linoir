@@ -30,7 +30,7 @@ const PLUGINS: PluginManifest[] = [
         componentName: 'AdminCalendarComponent',
         loader: () =>
           import(
-            '../calendar/scopes/admin/admin-calendar/admin-calendar.component'
+            '../available/calendar/scopes/admin/admin-calendar/admin-calendar.component'
             ),
       },
       {
@@ -38,7 +38,7 @@ const PLUGINS: PluginManifest[] = [
         componentName: 'KioskCalendarComponent',
         loader: () =>
           import(
-            '../calendar/scopes/kiosk/kiosk-calendar/kiosk-calendar.component'
+            '../available/calendar/scopes/kiosk/kiosk-calendar/kiosk-calendar.component'
             ),
       },
     ],

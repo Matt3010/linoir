@@ -1,8 +1,8 @@
 import {Routes} from '@angular/router';
 import RoutesDefinition from '../../common/routes-definition';
 import {MainLayout} from './main-layout/main-layout';
-import {PluginHostType} from '../plugin-host/enums/plugin-host-type';
-import {PluginHostResolver} from '../plugin-host/resolvers/plugin-host-resolver';
+import {RenderType} from '../render/enums/render-type';
+import {RenderResolver} from '../render/resolvers/render-resolver.service';
 
 export const LAYOUT_ROUTES: Routes = [
   {
@@ -12,24 +12,24 @@ export const LAYOUT_ROUTES: Routes = [
       {
         path: RoutesDefinition.admin,
         loadComponent: () =>
-          import('../plugin-host/pages/plugin-host-container/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
+          import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
         resolve: {
-          hostComponent: PluginHostResolver
+          hostComponent: RenderResolver
         },
         data: {
-          pluginHostType: PluginHostType.Global,
+          pluginHostType: RenderType.Admin,
           scope: 'admin'
         }
       },
       {
         path: RoutesDefinition.kiosk,
         loadComponent: () =>
-          import('../plugin-host/pages/plugin-host-container/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
+          import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
         resolve: {
-          hostComponent: PluginHostResolver
+          hostComponent: RenderResolver
         },
         data: {
-          pluginHostType: PluginHostType.Preview,
+          pluginHostType: RenderType.Kiosk,
           scope: 'kiosk'
         }
       }

@@ -3,7 +3,7 @@ import {PluginLoaderService} from '../../../plugins/services/plugin-loader.servi
 import {Plugin} from '../../../plugins/models/Plugin';
 
 @Component({
-  selector: 'lin-plugin-host-preview',
+  selector: 'lin-render-preview',
   standalone: true,
   imports: [],
   template: `
@@ -14,7 +14,8 @@ import {Plugin} from '../../../plugins/models/Plugin';
     }
   `
 })
-export class PluginHostGlobalComponent implements AfterViewInit {
+export class RenderKioskComponent implements AfterViewInit {
+
   public scope: InputSignal<string> = input.required<string>();
 
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
@@ -43,7 +44,6 @@ export class PluginHostGlobalComponent implements AfterViewInit {
         }
 
         container.clear();
-        container.createComponent(res.component);
         const componentRef = container.createComponent(res.component);
         if (componentRef) {
           componentRef.setInput('classInput', res.plugin);

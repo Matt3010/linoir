@@ -2,12 +2,12 @@ import {Component, OnInit, Type, ViewChild, ViewContainerRef} from '@angular/cor
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'lin-plugin-host-container',
+  selector: 'lin-render-container',
   template: `
     <ng-container #container></ng-container>`,
   standalone: true
 })
-export class PluginHostContainerComponent implements OnInit {
+export class RenderContainerComponent implements OnInit {
   @ViewChild('container', {read: ViewContainerRef, static: true}) container!: ViewContainerRef;
 
   constructor(private readonly route: ActivatedRoute) {
