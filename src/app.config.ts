@@ -3,6 +3,7 @@ import {provideRouter} from '@angular/router';
 import {APP_ROUTES} from './app/app.routes';
 import {provideHttpClient} from '@angular/common/http';
 import {WebsocketService} from './common/services/websocket.service';
+import {PluginLoaderService} from './features/plugin-registry/services/plugin-loader.service';
 
 
 export const appConfig: ApplicationConfig = {
@@ -11,6 +12,7 @@ export const appConfig: ApplicationConfig = {
     provideZonelessChangeDetection(),
     provideHttpClient(),
     provideRouter(APP_ROUTES),
-    WebsocketService
+    WebsocketService,
+    PluginLoaderService
   ]
 };

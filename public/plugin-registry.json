@@ -1,0 +1,12 @@
+[
+  {
+    "id": "hello",
+    "componentName": "HelloPlugin",
+    "scope": "admin"
+  },
+  {
+    "id": "hello",
+    "componentName": "HelloPlugin",
+    "scope": "kiosk"
+  }
+]

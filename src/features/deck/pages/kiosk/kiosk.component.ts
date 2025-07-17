@@ -4,15 +4,15 @@ import {AsyncPipe, JsonPipe} from '@angular/common';
 
 
 @Component({
-  selector: 'app-deck',
-  templateUrl: './deck.component.html',
+  selector: 'app-kiosk',
+  templateUrl: './kiosk.component.html',
   imports: [
     AsyncPipe,
     JsonPipe
   ],
-  styleUrls: ['./deck.component.css']
+  styleUrls: ['./kiosk.component.css']
 })
-export class DeckComponent {
+export class KioskComponent {
 
   public constructor(
     protected readonly webSocketService: WebsocketService

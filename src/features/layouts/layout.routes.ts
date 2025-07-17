@@ -13,9 +13,9 @@ export const LAYOUT_ROUTES: Routes = [
           import('../admin/admin.routes').then(m => m.CONFIGURATOR_ROUTES)
       },
       {
-        path: RoutesDefinition.deck,
+        path: RoutesDefinition.kiosk,
         loadChildren: () =>
-          import('./../deck/deck.routes').then(m => m.DECK_ROUTES)
+          import('../deck/kiosk.routes').then(m => m.KIOSK_ROUTES)
       }
     ]
   }

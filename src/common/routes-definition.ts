@@ -1,6 +1,6 @@
 const RoutesDefinition = {
   admin: 'admin',
-  deck: 'deck',
+  kiosk: 'kiosk',
 };
 
 export default RoutesDefinition;
