@@ -12,7 +12,7 @@ export const LAYOUT_ROUTES: Routes = [
       {
         path: RoutesDefinition.admin,
         loadComponent: () =>
-          import('../plugin-host/pages/plugin-host-container-component/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
+          import('../plugin-host/pages/plugin-host-container/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
         resolve: {
           hostComponent: PluginHostResolver
         },
@@ -24,7 +24,7 @@ export const LAYOUT_ROUTES: Routes = [
       {
         path: RoutesDefinition.kiosk,
         loadComponent: () =>
-          import('../plugin-host/pages/plugin-host-container-component/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
+          import('../plugin-host/pages/plugin-host-container/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
         resolve: {
           hostComponent: PluginHostResolver
         },

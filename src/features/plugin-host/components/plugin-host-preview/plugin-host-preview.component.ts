@@ -1,41 +1,52 @@
 import {AfterViewInit, Component, input, InputSignal, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
-import {PluginLoaderService} from '../../../plugin-registry/services/plugin-loader.service';
-import {Plugin} from '../../../plugin-registry/entities/Plugin';
+import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
+import {Plugin} from '../../../plugins/models/Plugin';
 
 @Component({
-  selector: 'lin-plugin-host-preview',
-  standalone: true,
-  template: `
-    @for (plugin of this.pluginLoader.plugins; track plugin.key + plugin.scope) {
-      <ng-template #pluginContainer></ng-template>
-    }
-  `
+    selector: 'lin-plugin-host-preview',
+    standalone: true,
+    template: `
+        @for (plugin of this.pluginLoader.plugins; track plugin.key + plugin.scope) {
+            <ng-template #pluginContainer></ng-template>
+        }
+    `
 })
 export class PluginHostPreviewComponent implements AfterViewInit {
 
-  public scope: InputSignal<string> = input.required<string>();
+    public scope: InputSignal<string> = input.required<string>();
 
-  @ViewChildren('pluginContainer', {read: ViewContainerRef})
-  containers!: QueryList<ViewContainerRef>;
+    @ViewChildren('pluginContainer', {read: ViewContainerRef})
+    containers!: QueryList<ViewContainerRef>;
 
-  filteredPlugins: Plugin[] = [];
+    constructor(protected readonly pluginLoader: PluginLoaderService) {
+    }
 
-  constructor(protected readonly pluginLoader: PluginLoaderService) {
-  }
+    filteredPlugins(plugins: Plugin[]): Plugin[] {
+        if (this.scope()) {
+            return plugins.filter((p) => p.conf.scope === this.scope());
+        }
+        return plugins;
+    }
 
-  ngAfterViewInit(): void {
-    this.filteredPlugins = this.scope()
-      ? this.pluginLoader.plugins.filter(p => p.conf.scope === this.scope())
-      : this.pluginLoader.plugins;
+    public ngAfterViewInit(): void {
+        (async () => {
+            const filteredPlugins: Plugin[] = this.filteredPlugins(this.pluginLoader.plugins);
+            for (let i = 0; i < filteredPlugins.length; i++) {
+                const plugin = filteredPlugins[i];
+                const res = await this.pluginLoader.loadComponent(plugin);
+                const container = this.containers.get(i);
 
-    (async () => {
-      for (let i = 0; i < this.filteredPlugins.length; i++) {
-        const plugin = this.filteredPlugins[i];
-        const component = await this.pluginLoader.loadComponent(plugin);
-        const container = this.containers.get(i);
-        container?.clear();
-        container?.createComponent(component);
-      }
-    })();
-  }
+                if (!container) {
+                    return;
+                }
+
+                container.clear();
+                const componentRef = container.createComponent(res.component);
+                if (componentRef) {
+                    componentRef.setInput('classInput', res.plugin);
+                }
+            }
+        })();
+
+    }
 }

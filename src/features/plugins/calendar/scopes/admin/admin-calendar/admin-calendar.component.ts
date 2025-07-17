@@ -1,4 +1,5 @@
-import {Component} from '@angular/core';
+import {Component, input, InputSignal} from '@angular/core';
+import {CalendarPlugin} from '../../../../models/CalendarPlugin';
 
 @Component({
   selector: 'lin-admin-calendar',
@@ -7,5 +8,7 @@ import {Component} from '@angular/core';
   styleUrl: './admin-calendar.component.css'
 })
 export class AdminCalendarComponent {
+
+  public classInput: InputSignal<CalendarPlugin> = input.required<CalendarPlugin>();
 
 }

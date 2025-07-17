@@ -1,6 +1,6 @@
 import {AfterViewInit, Component, input, InputSignal, QueryList, ViewChildren, ViewContainerRef,} from '@angular/core';
-import {PluginLoaderService} from '../../../plugin-registry/services/plugin-loader.service';
-import {Plugin} from '../../../plugin-registry/entities/Plugin';
+import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
+import {Plugin} from '../../../plugins/models/Plugin';
 
 @Component({
   selector: 'lin-plugin-host-preview',
@@ -8,7 +8,7 @@ import {Plugin} from '../../../plugin-registry/entities/Plugin';
   imports: [],
   template: `
     @if (this.pluginLoader.plugins.length) {
-      @for (plugin of this.pluginLoader.plugins; track $index) {
+      @for (_ of this.pluginLoader.plugins; track $index) {
         <ng-template #pluginContainer></ng-template>
       }
     }
@@ -32,12 +32,22 @@ export class PluginHostGlobalComponent implements AfterViewInit {
 
   public ngAfterViewInit(): void {
     (async () => {
-      for (let i = 0; i < this.pluginLoader.plugins.length; i++) {
-        const plugin = this.pluginLoader.plugins[i];
-        const component = await this.pluginLoader.loadComponent(plugin);
+      const filteredPlugins: Plugin[] = this.filteredPlugins(this.pluginLoader.plugins);
+      for (let i = 0; i < filteredPlugins.length; i++) {
+        const plugin = filteredPlugins[i];
+        const res = await this.pluginLoader.loadComponent(plugin);
         const container = this.containers.get(i);
-        container?.clear();
-        container?.createComponent(component);
+
+        if (!container) {
+          return;
+        }
+
+        container.clear();
+        container.createComponent(res.component);
+        const componentRef = container.createComponent(res.component);
+        if (componentRef) {
+          componentRef.setInput('classInput', res.plugin);
+        }
       }
     })();
 
