@@ -13,5 +13,10 @@
     "key": "hello",
     "componentName": "HelloPlugin",
     "scope": "kiosk"
+  },
+  {
+    "key": "hello2",
+    "componentName": "HelloPlugin2",
+    "scope": "kiosk"
   }
 ]

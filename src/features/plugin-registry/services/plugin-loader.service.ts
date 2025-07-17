@@ -45,11 +45,15 @@ export class PluginLoaderService {
   }
 
   public async loadComponent(manifest: PluginManifest): Promise<Type<unknown>> {
-    console.log(`Loading plugin ${manifest.key} with component ${manifest.componentName} (scope: ${manifest.scope})`);
+    if (!manifest) {
+      throw new Error(`Plugin not found`);
+    }
+
     const loader = LOCAL_PLUGIN_MAP[manifest.key];
     if (!loader) {
       throw new Error(`Plugin ${manifest.key} not found in static map`);
     }
+    console.log(`Loading plugin ${manifest.key} with component ${manifest.componentName} (scope: ${manifest.scope})`);
 
     const module: Record<string, Type<unknown>> = await loader();
     const component: Type<unknown> = module[manifest.componentName];
