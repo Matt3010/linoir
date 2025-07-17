@@ -32,7 +32,9 @@ export class PluginLoaderService {
       if (parsedPlugins.length === 0) {
         this._plugins$.next(plugins);
       }
-      const mergedPlugins = _.uniqBy([...plugins, ...parsedPlugins], 'key');
+      const mergedPlugins = _.uniqWith([...plugins, ...parsedPlugins], (a: PluginManifest, b: PluginManifest): boolean => {
+        return a.key === b.key && a.scope === b.scope;
+      });
       this._plugins$.next(mergedPlugins);
     });
   }
@@ -48,8 +50,8 @@ export class PluginLoaderService {
       throw new Error(`Plugin ${manifest.key} not found in static map`);
     }
 
-    const module = await loader();
-    const component = module[manifest.componentName];
+    const module: Record<string, Type<unknown>> = await loader();
+    const component: Type<unknown> = module[manifest.componentName];
     if (!component) {
       throw new Error(`Component ${manifest.componentName} not found in ${manifest.key}`);
     }
