@@ -23,7 +23,7 @@ export class PluginHostGlobalComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;
 
-  constructor(protected readonly pluginLoader: PluginLoaderService) {
+  public constructor(protected readonly pluginLoader: PluginLoaderService) {
   }
 
   public ngAfterViewInit(): void {

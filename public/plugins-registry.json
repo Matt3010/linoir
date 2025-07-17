@@ -1,0 +1,12 @@
+[
+  {
+    "key": "calendar-admin",
+    "componentName": "AdminCalendarComponent",
+    "scope": "admin"
+  },
+  {
+    "key": "calendar-kiosk",
+    "componentName": "KioskCalendarComponent",
+    "scope": "kiosk"
+  }
+]

@@ -1,3 +1,3 @@
 export const environment = {
-  plugin_registry_url: 'plugin-registry.json',
+  plugin_registry_url: 'plugins-registry.json',
 };

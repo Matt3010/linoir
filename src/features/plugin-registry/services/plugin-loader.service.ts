@@ -3,12 +3,11 @@ import {PluginManifest} from '../entities/plugin-manifest';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, filter, Observable} from 'rxjs';
 import {Plugin} from '../entities/Plugin';
-import {WebsocketService} from '../../../common/services/websocket.service';
 import {environment} from '../../../environments/environment';
 
 const LOCAL_PLUGIN_MAP: Record<string, () => Promise<Record<string, Type<unknown>>>> = {
-  // 'hello': () => import('../../local-plugins/hello-plugin/hello-plugin'),
-  // 'hello2': () => import('../../local-plugins/hello-plugin-2/hello-plugin'),
+  'calendar-admin': () => import('../../plugins/calendar/scopes/admin/admin-calendar/admin-calendar.component'),
+  'calendar-kiosk': () => import('../../plugins/calendar/scopes/kiosk/kiosk-calendar/kiosk-calendar.component'),
 };
 
 @Injectable()
@@ -19,7 +18,6 @@ export class PluginLoaderService {
 
   constructor(
     private readonly http: HttpClient,
-    private readonly wsService: WebsocketService,
   ) {
     this.loadManifest();
   }

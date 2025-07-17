@@ -19,7 +19,6 @@ export class WebsocketService {
     this.ws.onmessage = (event: MessageEvent<string>) => {
       const decoded = this.decode(event.data);
       if (decoded) {
-        console.log(`Received message on topic "${decoded.topic}":`, decoded.payload);
         const currentMessages: Message[] = this.messagesSubject.value;
         this.messagesSubject.next([...currentMessages, decoded]);
       }
