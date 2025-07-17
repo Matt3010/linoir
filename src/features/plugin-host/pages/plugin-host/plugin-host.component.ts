@@ -20,7 +20,7 @@ import {map} from 'rxjs';
 })
 export class PluginHostComponent implements AfterViewInit {
 
-  public scope = input<string | null>(null);
+  public scope = input.required<string>();
 
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;
@@ -28,11 +28,15 @@ export class PluginHostComponent implements AfterViewInit {
   constructor(protected readonly pluginLoader: PluginLoaderService) {
   }
 
-  ngAfterViewInit(): void {
+  public ngAfterViewInit(): void {
     this.pluginLoader.plugins$
-      .pipe(map(plugins => {
+      .pipe(map((plugins: PluginManifest[]): PluginManifest[] => {
+        const scopeMatch = (plugin: PluginManifest, scope: string) => {
+          return plugin.scope === scope;
+        }
+
         if (this.scope()) {
-          return plugins.filter(plugin => plugin.scope === this.scope());
+          return plugins.filter((plugin: PluginManifest) => scopeMatch(plugin, this.scope()));
         }
         return plugins;
       }))
