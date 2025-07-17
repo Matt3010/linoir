@@ -1,9 +1,11 @@
 const path = require('path');
-const fs = require('fs');
 const os = require('os');
+const fs = require('fs');
 const WebSocket = require('ws');
 const {spawn} = require('child_process');
 
+const mode = process.env.NODE_ENV || 'development';
+const isDev = mode === 'development';
 
 function getLocalIp() {
   const interfaces = os.networkInterfaces();
@@ -18,7 +20,7 @@ function getLocalIp() {
 }
 
 const localIp = getLocalIp();
-const PORT = 3333;
+const WS_PORT = 3333;
 const HOST = '0.0.0.0';
 
 const publicPath = path.resolve(__dirname, 'public');
@@ -34,7 +36,8 @@ try {
   console.error('Error writing server config:', error);
 }
 
-const wss = new WebSocket.Server({port: PORT, host: HOST});
+// Avvio WebSocket server
+const wss = new WebSocket.Server({port: WS_PORT, host: HOST});
 
 wss.on('connection', (ws, req) => {
   const clientIp = req.socket.remoteAddress;
@@ -64,19 +67,34 @@ wss.on('connection', (ws, req) => {
   });
 });
 
-console.log(`WebSocket server running on ws://${localIp}:${PORT}`);
+console.log(`WebSocket server running on ws://${localIp}:${WS_PORT}`);
+if (isDev) {
+  console.log(`Launching Angular app in development mode on http://${localIp}:4200...`);
+  const ngServe = spawn('npx', ['ng', 'serve', '--host', localIp, '--configuration=development'], {
+    stdio: 'inherit',
+    shell: true,
+  });
 
-// Avvio automatico Angular app
-console.log(`Launching Angular app on http://${localIp}:4200...`);
-const ngServe = spawn('npx', ['ng', 'serve', '--host', localIp], {
-  stdio: 'inherit',
-  shell: true
-});
+  ngServe.on('error', (err) => {
+    console.error('Failed to start ng serve:', err);
+  });
 
-ngServe.on('error', (err) => {
-  console.error('Failed to start ng serve:', err);
-});
+  ngServe.on('exit', (code) => {
+    console.log(`ng serve exited with code ${code}`);
+  });
+} else {
+  // Solo build, nessun server HTTP Node.js
+  console.log('Building Angular app for production...');
+  const ngBuild = spawn('npx', ['ng', 'build', '--configuration=production'], {
+    stdio: 'inherit',
+    shell: true,
+  });
 
-ngServe.on('exit', (code) => {
-  console.log(`ng serve exited with code ${code}`);
-});
+  ngBuild.on('exit', (code) => {
+    if (code === 0) {
+      console.log('Production build complete. Serve with Nginx separately.');
+    } else {
+      console.error(`ng build failed with code ${code}`);
+    }
+  });
+}

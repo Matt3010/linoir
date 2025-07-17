@@ -1,7 +1,7 @@
 import {Component, OnDestroy, OnInit} from '@angular/core';
 import {RouterOutlet} from '@angular/router';
 import {Subscription} from 'rxjs';
-import {WebsocketService} from '../common/services/websocket.service';
+import {WebsocketService} from './common/services/websocket.service';
 import {HttpClient} from '@angular/common/http';
 
 interface ServerConfig {

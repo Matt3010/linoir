@@ -1,13 +1,14 @@
 import {Injectable, Type} from '@angular/core';
 import {PluginManifest} from '../entities/plugin-manifest';
 import {HttpClient} from '@angular/common/http';
-import {BehaviorSubject, Observable} from 'rxjs';
+import {BehaviorSubject, filter, Observable} from 'rxjs';
 import {Plugin} from '../entities/Plugin';
 import {WebsocketService} from '../../../common/services/websocket.service';
+import {environment} from '../../../environments/environment';
 
 const LOCAL_PLUGIN_MAP: Record<string, () => Promise<Record<string, Type<unknown>>>> = {
-  'hello': () => import('../../local-plugins/hello-plugin/hello-plugin'),
-  'hello2': () => import('../../local-plugins/hello-plugin-2/hello-plugin'),
+  // 'hello': () => import('../../local-plugins/hello-plugin/hello-plugin'),
+  // 'hello2': () => import('../../local-plugins/hello-plugin-2/hello-plugin'),
 };
 
 @Injectable()
@@ -24,15 +25,19 @@ export class PluginLoaderService {
   }
 
   private loadManifest(): void {
-    this.http.get<PluginManifest[]>('plugin-registry.json').subscribe((plugins: PluginManifest[]) => {
-      const mapped: Plugin[] = plugins.map((p: PluginManifest): Plugin => new Plugin(
-        {
-          key: p.key,
-          componentName: p.componentName,
-          scope: p.scope
-        }));
-      this._plugins$.next(mapped);
-    });
+    this.http.get<PluginManifest[]>(environment.plugin_registry_url)
+      .pipe(
+        filter((res: PluginManifest[]) => !!res)
+      )
+      .subscribe((plugins: PluginManifest[]) => {
+        const mapped: Plugin[] = plugins.map((p: PluginManifest): Plugin => new Plugin(
+          {
+            key: p.key,
+            componentName: p.componentName,
+            scope: p.scope
+          }));
+        this._plugins$.next(mapped);
+      });
   }
 
   public async loadComponent(plugin: Plugin): Promise<Type<unknown>> {

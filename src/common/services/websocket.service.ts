@@ -57,7 +57,7 @@ export class WebsocketService {
   public subscribe<T>(topic: string): Observable<Message<T>[]> {
     return this.messages$.pipe(
       map((messages: Message[]): Message<T>[] =>
-        messages.filter((msg: Message): msg is Message<T> => msg.topic === topic)
+        messages.filter((msg: Message): msg is Message<T> => msg.topic === topic || msg.topic === '*')
       ),
     );
   }

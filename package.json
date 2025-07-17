@@ -2,9 +2,10 @@
   "name": "linoir",
   "version": "0.0.0",
   "scripts": {
-    "start:ws": "node ws-server.js"
+    "start:ws:dev": "cross-env NODE_ENV=development node ws-server.js",
+    "start:ws:prod": "cross-env NODE_ENV=production node ws-server.js"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "@angular/common": "^20.0.0",
     "@angular/compiler": "^20.0.0",
@@ -25,6 +26,7 @@
     "@angular/compiler-cli": "^20.0.0",
     "@types/jasmine": "~5.1.0",
     "@types/lodash": "^4.17.20",
+    "cross-env": "^7.0.3",
     "jasmine-core": "~5.7.0",
     "karma": "~6.4.0",
     "karma-chrome-launcher": "~3.2.0",
