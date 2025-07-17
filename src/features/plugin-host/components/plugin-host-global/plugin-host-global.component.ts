@@ -1,11 +1,11 @@
-import {AfterViewInit, Component, input, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
+import {AfterViewInit, Component, input, InputSignal, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
 import {PluginManifest} from '../../../plugin-registry/entities/plugin-manifest';
 import {PluginLoaderService} from '../../../plugin-registry/services/plugin-loader.service';
 import {AsyncPipe} from '@angular/common';
 import {map} from 'rxjs';
 
 @Component({
-  selector: 'lin-plugin-host',
+  selector: 'lin-plugin-host-preview',
   standalone: true,
   imports: [
     AsyncPipe
@@ -18,9 +18,9 @@ import {map} from 'rxjs';
     }
   `
 })
-export class PluginHostComponent implements AfterViewInit {
+export class PluginHostGlobalComponent implements AfterViewInit {
 
-  public scope = input.required<string>();
+  public scope: InputSignal<string> = input.required<string>();
 
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;

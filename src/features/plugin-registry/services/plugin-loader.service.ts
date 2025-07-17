@@ -6,6 +6,7 @@ import _ from 'lodash';
 
 const LOCAL_PLUGIN_MAP: Record<string, () => Promise<Record<string, Type<unknown>>>> = {
   'hello': () => import('../../local-plugins/hello-plugin/hello-plugin'),
+  'hello2': () => import('../../local-plugins/hello-plugin-2/hello-plugin'),
 };
 
 @Injectable()

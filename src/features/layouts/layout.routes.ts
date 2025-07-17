@@ -1,6 +1,8 @@
 import {Routes} from '@angular/router';
 import RoutesDefinition from '../../common/routes-definition';
 import {MainLayout} from './main-layout/main-layout';
+import {PluginHostType} from '../plugin-host/enums/plugin-host-type';
+import {PluginHostResolver} from '../plugin-host/resolvers/plugin-host-resolver';
 
 export const LAYOUT_ROUTES: Routes = [
   {
@@ -9,13 +11,27 @@ export const LAYOUT_ROUTES: Routes = [
     children: [
       {
         path: RoutesDefinition.admin,
-        loadChildren: () =>
-          import('../admin/admin.routes').then(m => m.CONFIGURATOR_ROUTES)
+        loadComponent: () =>
+          import('../plugin-host/pages/plugin-host-container-component/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
+        resolve: {
+          hostComponent: PluginHostResolver
+        },
+        data: {
+          pluginHostType: PluginHostType.Global,
+          scope: 'admin'
+        }
       },
       {
         path: RoutesDefinition.kiosk,
-        loadChildren: () =>
-          import('../deck/kiosk.routes').then(m => m.KIOSK_ROUTES)
+        loadComponent: () =>
+          import('../plugin-host/pages/plugin-host-container-component/plugin-host-container-component').then(m => m.PluginHostContainerComponent),
+        resolve: {
+          hostComponent: PluginHostResolver
+        },
+        data: {
+          pluginHostType: PluginHostType.Preview,
+          scope: 'kiosk'
+        }
       }
     ]
   }
