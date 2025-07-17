@@ -2,7 +2,7 @@ import {Component, OnInit, Type, ViewChild, ViewContainerRef} from '@angular/cor
 import {ActivatedRoute} from '@angular/router';
 
 @Component({
-  selector: 'app-plugin-host-container',
+  selector: 'lin-plugin-host-container',
   template: `
     <ng-container #container></ng-container>`,
   standalone: true

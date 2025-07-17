@@ -2,12 +2,14 @@ const path = require('path');
 const fs = require('fs');
 const os = require('os');
 const WebSocket = require('ws');
+const {spawn} = require('child_process');
+
 
 function getLocalIp() {
   const interfaces = os.networkInterfaces();
   for (const ifaceName in interfaces) {
     for (const iface of interfaces[ifaceName]) {
-      if (iface.family === 'IPv4' && !iface.internal) {
+      if (iface.family === 'IPv4' && !iface.internal && iface.address.startsWith('192.')) {
         return iface.address;
       }
     }
@@ -63,3 +65,18 @@ wss.on('connection', (ws, req) => {
 });
 
 console.log(`WebSocket server running on ws://${localIp}:${PORT}`);
+
+// Avvio automatico Angular app
+console.log(`Launching Angular app on http://${localIp}:4200...`);
+const ngServe = spawn('npx', ['ng', 'serve', '--host', localIp], {
+  stdio: 'inherit',
+  shell: true
+});
+
+ngServe.on('error', (err) => {
+  console.error('Failed to start ng serve:', err);
+});
+
+ngServe.on('exit', (code) => {
+  console.log(`ng serve exited with code ${code}`);
+});

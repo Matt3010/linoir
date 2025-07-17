@@ -2,8 +2,7 @@
   "name": "linoir",
   "version": "0.0.0",
   "scripts": {
-    "start:ws": "node ws-server.js",
-    "start": "concurrently \"npm run start:ws\" \"ng serve --host 0.0.0.0\""
+    "start:ws": "node ws-server.js"
   },
   "private": true,
   "dependencies": {

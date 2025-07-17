@@ -2,7 +2,8 @@ import {Injectable, Type} from '@angular/core';
 import {PluginManifest} from '../entities/plugin-manifest';
 import {HttpClient} from '@angular/common/http';
 import {BehaviorSubject, Observable} from 'rxjs';
-import _ from 'lodash';
+import {Plugin} from '../entities/Plugin';
+import {WebsocketService} from '../../../common/services/websocket.service';
 
 const LOCAL_PLUGIN_MAP: Record<string, () => Promise<Record<string, Type<unknown>>>> = {
   'hello': () => import('../../local-plugins/hello-plugin/hello-plugin'),
@@ -12,56 +13,41 @@ const LOCAL_PLUGIN_MAP: Record<string, () => Promise<Record<string, Type<unknown
 @Injectable()
 export class PluginLoaderService {
 
-  private readonly _plugins$: BehaviorSubject<PluginManifest[]> = new BehaviorSubject<PluginManifest[]>([]);
-  public readonly plugins$: Observable<PluginManifest[]> = this._plugins$.asObservable();
+  private readonly _plugins$: BehaviorSubject<Plugin[]> = new BehaviorSubject<Plugin[]>([]);
+  public readonly plugins$: Observable<Plugin[]> = this._plugins$.asObservable();
 
   constructor(
-    private readonly http: HttpClient
+    private readonly http: HttpClient,
+    private readonly wsService: WebsocketService,
   ) {
-    this.loadManifest()
+    this.loadManifest();
   }
 
   private loadManifest(): void {
     this.http.get<PluginManifest[]>('plugin-registry.json').subscribe((plugins: PluginManifest[]) => {
-      localStorage.setItem('plugin-manifest', JSON.stringify(plugins));
-      const storedPlugins: string | null = localStorage.getItem('plugin-manifest');
-      if (!storedPlugins) {
-        this._plugins$.next(plugins);
-        return;
-      }
-      const parsedPlugins: PluginManifest[] = JSON.parse(storedPlugins);
-      if (parsedPlugins.length === 0) {
-        this._plugins$.next(plugins);
-      }
-      const mergedPlugins = _.uniqWith([...plugins, ...parsedPlugins], (a: PluginManifest, b: PluginManifest): boolean => {
-        return a.key === b.key && a.scope === b.scope;
-      });
-      this._plugins$.next(mergedPlugins);
+      const mapped: Plugin[] = plugins.map((p: PluginManifest): Plugin => new Plugin(
+        {
+          key: p.key,
+          componentName: p.componentName,
+          scope: p.scope
+        }));
+      this._plugins$.next(mapped);
     });
   }
 
-  public reloadManifest(): void {
-    this.loadManifest();
-  }
-
-  public async loadComponent(manifest: PluginManifest): Promise<Type<unknown>> {
-    if (!manifest) {
-      throw new Error(`Plugin not found`);
-    }
-
-    const loader = LOCAL_PLUGIN_MAP[manifest.key];
+  public async loadComponent(plugin: Plugin): Promise<Type<unknown>> {
+    const loader = LOCAL_PLUGIN_MAP[plugin.conf.key];
     if (!loader) {
-      throw new Error(`Plugin ${manifest.key} not found in static map`);
+      throw new Error(`Plugin ${plugin.conf.key} not found in static map`);
     }
-    console.log(`Loading plugin ${manifest.key} with component ${manifest.componentName} (scope: ${manifest.scope})`);
 
-    const module: Record<string, Type<unknown>> = await loader();
-    const component: Type<unknown> = module[manifest.componentName];
+    const module = await loader();
+    const component = module[plugin.conf.componentName];
+
     if (!component) {
-      throw new Error(`Component ${manifest.componentName} not found in ${manifest.key}`);
+      throw new Error(`Component ${plugin.conf.componentName} not found in ${plugin.conf.key}`);
     }
 
     return component;
   }
-
 }

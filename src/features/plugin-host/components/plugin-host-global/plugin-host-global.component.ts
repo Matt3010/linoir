@@ -1,15 +1,13 @@
-import {AfterViewInit, Component, input, InputSignal, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
-import {PluginManifest} from '../../../plugin-registry/entities/plugin-manifest';
-import {PluginLoaderService} from '../../../plugin-registry/services/plugin-loader.service';
+import {AfterViewInit, Component, input, InputSignal, QueryList, ViewChildren, ViewContainerRef,} from '@angular/core';
 import {AsyncPipe} from '@angular/common';
+import {PluginLoaderService} from '../../../plugin-registry/services/plugin-loader.service';
+import {Plugin} from '../../../plugin-registry/entities/Plugin';
 import {map} from 'rxjs';
 
 @Component({
   selector: 'lin-plugin-host-preview',
   standalone: true,
-  imports: [
-    AsyncPipe
-  ],
+  imports: [AsyncPipe],
   template: `
     @if (pluginLoader.plugins$ | async) {
       @for (plugin of pluginLoader.plugins$ | async; track $index) {
@@ -30,21 +28,19 @@ export class PluginHostGlobalComponent implements AfterViewInit {
 
   public ngAfterViewInit(): void {
     this.pluginLoader.plugins$
-      .pipe(map((plugins: PluginManifest[]): PluginManifest[] => {
-        const scopeMatch = (plugin: PluginManifest, scope: string) => {
-          return plugin.scope === scope;
-        }
-
-        if (this.scope()) {
-          return plugins.filter((plugin: PluginManifest) => scopeMatch(plugin, this.scope()));
-        }
-        return plugins;
-      }))
-      .subscribe((plugins: PluginManifest[]) => {
+      .pipe(
+        map((plugins: Plugin[]): Plugin[] => {
+          if (this.scope()) {
+            return plugins.filter(p => p.conf.scope === this.scope());
+          }
+          return plugins;
+        })
+      )
+      .subscribe((filteredPlugins: Plugin[]): void => {
         (async () => {
-          for (let i = 0; i < plugins.length; i++) {
-            const manifest = plugins[i];
-            const component = await this.pluginLoader.loadComponent(manifest);
+          for (let i = 0; i < filteredPlugins.length; i++) {
+            const plugin = filteredPlugins[i];
+            const component = await this.pluginLoader.loadComponent(plugin);
             const container = this.containers.get(i);
             container?.clear();
             container?.createComponent(component);
@@ -52,6 +48,4 @@ export class PluginHostGlobalComponent implements AfterViewInit {
         })();
       });
   }
-
-
 }

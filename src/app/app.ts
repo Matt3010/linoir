@@ -18,7 +18,7 @@ interface ServerConfig {
   ]
 })
 export class App implements OnInit, OnDestroy {
-  private wsSub?: Subscription;
+  private readonly wsSub?: Subscription;
 
   constructor(
     private readonly wsService: WebsocketService,
@@ -31,14 +31,8 @@ export class App implements OnInit, OnDestroy {
       next: (config) => {
         const wsUrl = `ws://${config.ip}:3333`;
         this.wsService.connect(wsUrl);
-
-        this.wsSub = this.wsService.messages$.subscribe({
-          error: (err) => {
-            console.error('Error in WebSocket stream:', err);
-          }
-        });
       },
-      error: (err) => {
+      error: (err): void => {
         console.error('Error loading config:', err);
       }
     });
