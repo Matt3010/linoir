@@ -23,7 +23,6 @@ export abstract class Plugin<GenericConfig extends BaseMessagePayload = BaseMess
     return this.variant.componentName;
   }
 
-  public abstract sendMessage(message: Message<GenericConfig>): void;
 
   protected constructor(
     private readonly manifest: PluginManifest,
@@ -45,4 +44,7 @@ export abstract class Plugin<GenericConfig extends BaseMessagePayload = BaseMess
   public listenTopic(): void {
     this.webSocketService.subscribe(this.key).subscribe();
   }
+
+  public abstract sendMessage(message: Message<GenericConfig>): void;
+
 }

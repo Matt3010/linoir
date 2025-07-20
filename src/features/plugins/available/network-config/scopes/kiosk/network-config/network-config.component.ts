@@ -9,5 +9,4 @@ import {CalendarPlugin} from '../../../../../models/CalendarPlugin';
 })
 export class NetworkConfigComponent {
   public classInput: InputSignal<CalendarPlugin> = input.required<CalendarPlugin>();
-
 }

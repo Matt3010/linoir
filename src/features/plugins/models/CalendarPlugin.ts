@@ -9,6 +9,9 @@ export class CalendarPlugin extends Plugin {
     webSocketService: WebsocketService
   ) {
     super(manifest, variant, webSocketService);
+    this.configuration = {
+      active: false
+    }
   }
 
   public override sendMessage(message: Message): void {
