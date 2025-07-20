@@ -2,7 +2,7 @@ import {Routes} from '@angular/router';
 import RoutesDefinition from '../../common/routes-definition';
 import {MainLayout} from './main-layout/main-layout';
 import {RenderType} from '../render/enums/render-type';
-import {RenderResolver} from '../render/resolvers/render-resolver.service';
+import {RenderResolver} from '../render/resolvers/render.resolver';
 
 export const LAYOUT_ROUTES: Routes = [
   {

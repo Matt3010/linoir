@@ -1,6 +1,15 @@
-import {AfterViewInit, Component, input, InputSignal, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
-import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
-import {Plugin} from '../../../plugins/models/Plugin';
+import {
+  AfterViewInit,
+  Component,
+  ComponentRef,
+  input,
+  InputSignal,
+  QueryList,
+  ViewChildren,
+  ViewContainerRef
+} from '@angular/core';
+import {LoadedPluginComponent, PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
+import {BaseMessagePayload, Plugin} from '../../../plugins/models/Plugin';
 
 @Component({
   selector: 'lin-render-admin',
@@ -22,31 +31,27 @@ export class RenderAdminComponent implements AfterViewInit {
   }
 
   filteredPlugins(plugins: Plugin[]): Plugin[] {
-    if (this.scope()) {
-      return plugins.filter((p) => p.conf.scope === this.scope());
-    }
-    return plugins;
+    return plugins.filter((p: Plugin<BaseMessagePayload>): boolean => p.scope === this.scope())
   }
 
   public ngAfterViewInit(): void {
-    (async () => {
+    (async (): Promise<void> => {
       const filteredPlugins: Plugin[] = this.filteredPlugins(this.pluginLoader.plugins);
-      for (let i = 0; i < filteredPlugins.length; i++) {
-        const plugin = filteredPlugins[i];
-        const res = await this.pluginLoader.loadComponent(plugin);
-        const container = this.containers.get(i);
+      for (let i: number = 0; i < filteredPlugins.length; i++) {
+        const plugin: Plugin<BaseMessagePayload> = filteredPlugins[i];
+        const res: LoadedPluginComponent = await this.pluginLoader.loadComponent(plugin);
+        const container: ViewContainerRef | undefined = this.containers.get(i);
 
         if (!container) {
           return;
         }
 
         container.clear();
-        const componentRef = container.createComponent(res.component);
+        const componentRef: ComponentRef<unknown> = container.createComponent(res.component);
         if (componentRef) {
           componentRef.setInput('classInput', res.plugin);
         }
       }
     })();
-
   }
 }

@@ -1,9 +1,9 @@
 import {Injectable} from '@angular/core';
 import {BehaviorSubject, map, Observable} from 'rxjs';
 
-export interface Message<TPayload = any> {
+export interface Message<AnyPayload = unknown> {
   topic: string;
-  payload: TPayload;
+  payload: AnyPayload;
 }
 
 @Injectable()

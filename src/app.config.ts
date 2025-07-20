@@ -4,7 +4,7 @@ import {APP_ROUTES} from './app.routes';
 import {provideHttpClient, withFetch} from '@angular/common/http';
 import {WebsocketService} from './common/services/websocket.service';
 import {PluginLoaderService} from './features/plugins/services/plugin-loader.service';
-import {RenderResolver} from './features/render/resolvers/render-resolver.service';
+import {RenderResolver} from './features/render/resolvers/render.resolver';
 
 
 export const appConfig: ApplicationConfig = {
