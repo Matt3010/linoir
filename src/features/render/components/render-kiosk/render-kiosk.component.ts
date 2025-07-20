@@ -16,11 +16,13 @@ import {BaseMessagePayload, Plugin} from '../../../plugins/models/Plugin';
   standalone: true,
   imports: [],
   template: `
-    @if (this.pluginLoader.plugins.length) {
-      @for (_ of this.pluginLoader.plugins; track $index) {
-        <ng-template #pluginContainer></ng-template>
+    <div class="d-flex flex-wrap">
+      @for (plugin of filteredPlugins(pluginLoader.plugins); track plugin) {
+        <div class="flex-grow-1">
+          <ng-template #pluginContainer></ng-template>
+        </div>
       }
-    }
+    </div>
   `
 })
 export class RenderKioskComponent implements AfterViewInit {
@@ -35,7 +37,7 @@ export class RenderKioskComponent implements AfterViewInit {
 
   filteredPlugins(plugins: Plugin[]): Plugin[] {
     return plugins.filter((p: Plugin<BaseMessagePayload>): boolean => p.scope === this.scope())
-      .filter((p: Plugin<BaseMessagePayload>): boolean => !!p.configuration && p.configuration.active)
+      .filter((p: Plugin<BaseMessagePayload>): boolean => p.configuration.active)
   }
 
   public ngAfterViewInit(): void {
