@@ -17,8 +17,7 @@ export const LAYOUT_ROUTES: Routes = [
           hostComponent: RenderResolver
         },
         data: {
-          pluginHostType: RenderType.Admin,
-          scope: 'admin'
+          scope: RenderType.Admin
         }
       },
       {
@@ -29,8 +28,7 @@ export const LAYOUT_ROUTES: Routes = [
           hostComponent: RenderResolver
         },
         data: {
-          pluginHostType: RenderType.Kiosk,
-          scope: 'kiosk'
+          scope: RenderType.Kiosk
         }
       }
     ]

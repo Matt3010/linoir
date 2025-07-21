@@ -1,12 +1,15 @@
-import {Injectable, Type} from '@angular/core';
-import {Plugin} from '../models/Plugin';
+import {ComponentRef, Injectable, QueryList, Type, ViewContainerRef} from '@angular/core';
+import {BasePlugin} from '../models/BasePlugin';
 import {WebsocketService} from '../../../common/services/websocket.service';
 import {CalendarPlugin, NetworkConfigPlugin} from '../models/_index'
+import {RenderType} from '../../render/enums/render-type';
+import {v4 as uuidv4} from 'uuid';
 
 export interface PluginVariant {
-  scope: string;
+  scope: RenderType;
   componentName: string;
   loader: () => Promise<Record<string, Type<unknown>>>;
+  id: string,
 }
 
 export interface PluginManifest {
@@ -17,7 +20,7 @@ export interface PluginManifest {
 
 export interface LoadedPluginComponent {
   component: Type<unknown>;
-  plugin: Plugin;
+  plugin: BasePlugin;
 }
 
 const PLUGINS: PluginManifest[] = [
@@ -26,7 +29,8 @@ const PLUGINS: PluginManifest[] = [
     class: CalendarPlugin,
     variants: [
       {
-        scope: 'admin',
+        id: uuidv4(),
+        scope: RenderType.Admin,
         componentName: 'AdminCalendarComponent',
         loader: () =>
           import(
@@ -34,7 +38,8 @@ const PLUGINS: PluginManifest[] = [
             ),
       },
       {
-        scope: 'kiosk',
+        id: uuidv4(),
+        scope: RenderType.Kiosk,
         componentName: 'KioskCalendarComponent',
         loader: () =>
           import(
@@ -48,7 +53,8 @@ const PLUGINS: PluginManifest[] = [
     class: NetworkConfigPlugin,
     variants: [
       {
-        scope: 'admin',
+        id: uuidv4(),
+        scope: RenderType.Admin,
         componentName: 'NetworkConfigComponent',
         loader: () =>
           import(
@@ -56,7 +62,8 @@ const PLUGINS: PluginManifest[] = [
             ),
       },
       {
-        scope: 'kiosk',
+        id: uuidv4(),
+        scope: RenderType.Kiosk,
         componentName: 'NetworkConfigComponent',
         loader: () =>
           import(
@@ -69,9 +76,9 @@ const PLUGINS: PluginManifest[] = [
 
 @Injectable()
 export class PluginLoaderService {
-  private readonly _plugins: Plugin[] = [];
+  private readonly _plugins: BasePlugin[] = [];
 
-  public get plugins(): Plugin[] {
+  public get plugins(): BasePlugin[] {
     return this._plugins;
   }
 
@@ -85,27 +92,34 @@ export class PluginLoaderService {
     for (const manifest of PLUGINS) {
       for (const v of manifest.variants) {
         if (manifest.class) {
-          this._plugins.push(
-            new manifest.class(manifest, v, this.webSocketService)
-          );
+          const found: BasePlugin | undefined = this._plugins.find((p: BasePlugin): boolean => p instanceof manifest.class)
+          if (found) {
+            found.addVariant(v.scope, v);
+          } else {
+            const newPlugin = new manifest.class(manifest, this.webSocketService);
+            newPlugin.addVariant(v.scope, v);
+            this._plugins.push(
+              newPlugin
+            );
+          }
         } else {
-          throw new Error('Plugin class not defined for ' + manifest.key);
+          throw new Error('BasePlugin class not defined for ' + manifest.key);
         }
       }
     }
   }
 
 
-  public async loadComponent(plugin: Plugin): Promise<LoadedPluginComponent> {
-    const manifest = PLUGINS.find((m) => m.key === plugin.key);
+  private async getComponent(plugin: BasePlugin, scope: RenderType): Promise<LoadedPluginComponent> {
+    const manifest: PluginManifest | undefined = PLUGINS.find((m: PluginManifest): boolean => m.key === plugin.key());
     if (!manifest) {
       throw new Error(`Plugin '${plugin.key}' non trovato`);
     }
 
     const variant: PluginVariant | undefined = manifest.variants.find(
-      (v) =>
-        v.scope === plugin.scope &&
-        v.componentName === plugin.componentName
+      (v: PluginVariant): boolean =>
+        v.scope === plugin.scope(scope) &&
+        v.componentName === plugin.componentName(scope)
     );
     if (!variant) {
       throw new Error(
@@ -126,4 +140,35 @@ export class PluginLoaderService {
       plugin: plugin
     };
   }
+
+
+  public initializeConfigurationChangeListeners(callback: () => void | Promise<void>): void {
+    this.plugins.forEach((plugin: BasePlugin): void => {
+      plugin.configurationChangeEvent.subscribe(() => {
+        if (callback) {
+          callback();
+        }
+      });
+    });
+  }
+
+  public async render(plugins: BasePlugin[], containers: QueryList<ViewContainerRef>, scope: RenderType): Promise<void> {
+    const filteredPlugins: BasePlugin[] = plugins;
+    for (let i: number = 0; i < filteredPlugins.length; i++) {
+      const plugin: BasePlugin = filteredPlugins[i];
+      const res: LoadedPluginComponent = await this.getComponent(plugin, scope);
+      const container: ViewContainerRef | undefined = containers.get(i);
+
+      if (!container) {
+        console.warn(`No container found for plugin at index ${i}`);
+        continue;
+      }
+
+      container.clear();
+      const componentRef: ComponentRef<unknown> = container.createComponent(res.component);
+      componentRef.setInput?.('classInput', res.plugin);
+    }
+  }
+
+
 }

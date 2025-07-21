@@ -1,5 +1,5 @@
 import {Injectable} from '@angular/core';
-import {BehaviorSubject, map, Observable} from 'rxjs';
+import {BehaviorSubject, map, mergeAll, Observable} from 'rxjs';
 
 export interface Message<AnyPayload = unknown> {
   topic: string;
@@ -53,11 +53,12 @@ export class WebsocketService {
     }
   }
 
-  public subscribe<T>(topic: string): Observable<Message<T>[]> {
+  public subscribe<T>(topic: string): Observable<Message<T>> {
     return this.messages$.pipe(
       map((messages: Message[]): Message<T>[] =>
-        messages.filter((msg: Message): msg is Message<T> => msg.topic === topic || msg.topic === '*')
+        messages.filter((msg: Message, index: number): msg is Message<T> => (msg.topic === topic || msg.topic === '*') && index === messages.length - 1)
       ),
+      mergeAll()
     );
   }
 

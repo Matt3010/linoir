@@ -7,7 +7,7 @@ import {RenderAdminComponent} from '../components/render-admin/render-admin.comp
 @Injectable()
 export class RenderResolver implements Resolve<Type<unknown>> {
   resolve(route: ActivatedRouteSnapshot): Type<unknown> {
-    switch (route.data['pluginHostType']) {
+    switch (route.data['scope']) {
       case RenderType.Admin:
         return RenderAdminComponent;
       case RenderType.Kiosk:

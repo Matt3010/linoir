@@ -15,9 +15,7 @@ export class RenderContainerComponent implements OnInit {
 
   ngOnInit(): void {
     const componentType: Type<unknown> = this.route.snapshot.data['hostComponent'];
-    const scope: string = this.route.snapshot.data['scope'];
     this.container.clear();
-    const component = this.container.createComponent(componentType);
-    component.setInput('scope', scope)
+    this.container.createComponent(componentType);
   }
 }

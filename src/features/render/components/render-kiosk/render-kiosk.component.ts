@@ -1,15 +1,7 @@
-import {
-  AfterViewInit,
-  Component,
-  ComponentRef,
-  input,
-  InputSignal,
-  QueryList,
-  ViewChildren,
-  ViewContainerRef,
-} from '@angular/core';
-import {LoadedPluginComponent, PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
-import {BaseMessagePayload, Plugin} from '../../../plugins/models/Plugin';
+import {AfterViewInit, Component, QueryList, ViewChildren, ViewContainerRef,} from '@angular/core';
+import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
+import {BasePlugin} from '../../../plugins/models/BasePlugin';
+import {RenderType} from '../../enums/render-type';
 
 @Component({
   selector: 'lin-render-preview',
@@ -17,7 +9,7 @@ import {BaseMessagePayload, Plugin} from '../../../plugins/models/Plugin';
   imports: [],
   template: `
     <div class="d-flex flex-wrap">
-      @for (plugin of filteredPlugins(pluginLoader.plugins); track plugin) {
+      @for (plugin of filteredPlugins(pluginLoader.plugins); track $index) {
         <div class="flex-grow-1">
           <ng-template #pluginContainer></ng-template>
         </div>
@@ -26,38 +18,23 @@ import {BaseMessagePayload, Plugin} from '../../../plugins/models/Plugin';
   `
 })
 export class RenderKioskComponent implements AfterViewInit {
-
-  public scope: InputSignal<string> = input.required<string>();
-
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;
+
+  private readonly renderType: RenderType = RenderType.Kiosk;
 
   constructor(protected readonly pluginLoader: PluginLoaderService) {
   }
 
-  filteredPlugins(plugins: Plugin[]): Plugin[] {
-    return plugins.filter((p: Plugin<BaseMessagePayload>): boolean => p.scope === this.scope())
-      .filter((p: Plugin<BaseMessagePayload>): boolean => p.configuration.active)
+  filteredPlugins(plugins: BasePlugin[]): BasePlugin[] {
+    return plugins
+      .filter((p: BasePlugin): boolean => p.configuration.active);
   }
 
   public ngAfterViewInit(): void {
-    (async (): Promise<void> => {
-      const filteredPlugins: Plugin[] = this.filteredPlugins(this.pluginLoader.plugins);
-      for (let i: number = 0; i < filteredPlugins.length; i++) {
-        const plugin: Plugin<BaseMessagePayload> = filteredPlugins[i];
-        const res: LoadedPluginComponent = await this.pluginLoader.loadComponent(plugin);
-        const container: ViewContainerRef | undefined = this.containers.get(i);
-
-        if (!container) {
-          return;
-        }
-
-        container.clear();
-        const componentRef: ComponentRef<unknown> = container.createComponent(res.component);
-        if (componentRef) {
-          componentRef.setInput('classInput', res.plugin);
-        }
-      }
-    })();
+    const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.filteredPlugins(this.pluginLoader.plugins), this.containers, this.renderType);
+    this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
+    renderCallback().then();
   }
+
 }
