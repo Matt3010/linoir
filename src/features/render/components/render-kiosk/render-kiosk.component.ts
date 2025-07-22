@@ -11,7 +11,7 @@ import {Flip} from 'gsap/Flip';
   template: `
     <div class="d-flex flex-wrap h-100 gap-2 p-2 flip-container">
       @for (plugin of filteredPlugins(pluginLoader.plugins); track $index) {
-        <div class="flex-grow-1 bg-danger rounded target p-2">
+        <div class="flex-grow-1 bg-danger rounded target ps-3 py-2 pe-2">
           <ng-template #pluginContainer></ng-template>
         </div>
       }
