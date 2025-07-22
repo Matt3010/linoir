@@ -17,7 +17,7 @@ export class WebsocketService {
     this.ws = new WebSocket(url);
 
     this.ws.onmessage = (event: MessageEvent<string>) => {
-      const decoded = this.decode(event.data);
+      const decoded: Message<unknown> | null = this.decode(event.data);
       if (decoded) {
         const currentMessages: Message[] = this.messagesSubject.value;
         this.messagesSubject.next([...currentMessages, decoded]);

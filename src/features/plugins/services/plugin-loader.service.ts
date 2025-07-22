@@ -146,7 +146,9 @@ export class PluginLoaderService {
     this.plugins.forEach((plugin: BasePlugin): void => {
       plugin.configurationChangeEvent.subscribe(() => {
         if (callback) {
-          callback();
+          requestAnimationFrame(() => {
+            callback();
+          });
         }
       });
     });

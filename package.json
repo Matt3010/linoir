@@ -3,8 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "start:ws:dev": "cross-env NODE_ENV=development node ws-server.js",
-    "start:ws:prod": "cross-env NODE_ENV=production node ws-server.js",
-    "generate:plugins": "node generate-plugins-registry.js"
+    "start:ws:prod": "cross-env NODE_ENV=production node ws-server.js"
   },
   "private": false,
   "dependencies": {
@@ -15,7 +14,6 @@
     "@angular/platform-browser": "^20.0.0",
     "@angular/router": "^20.0.0",
     "bootstrap": "^5.3.7",
-    "concurrently": "^9.2.0",
     "gsap": "^3.13.0",
     "lodash": "^4.17.21",
     "ng-qrcode": "^20.0.0",
