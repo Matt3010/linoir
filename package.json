@@ -2,8 +2,7 @@
   "name": "linoir",
   "version": "0.0.0",
   "scripts": {
-    "start:ws:dev": "cross-env NODE_ENV=development node ws-server.js",
-    "start:ws:prod": "cross-env NODE_ENV=production node ws-server.js"
+    "start:ws": "cross-env NODE_ENV=development node service/index.js"
   },
   "private": false,
   "dependencies": {
