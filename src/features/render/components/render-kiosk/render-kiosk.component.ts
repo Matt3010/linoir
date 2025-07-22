@@ -55,11 +55,11 @@ export class RenderKioskComponent implements AfterViewInit, OnDestroy {
     this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
 
     renderCallback().then((): void => {
-      this.listenForResizeForFLIP();
+      this.setupResizeObserver();
     });
   }
 
-  private listenForResizeForFLIP(): void {
+  private setupResizeObserver(): void {
     const container: Element | null = document.querySelector('.flip-container');
     if (container) {
       this.resizeObserver = new ResizeObserver((): void => {
