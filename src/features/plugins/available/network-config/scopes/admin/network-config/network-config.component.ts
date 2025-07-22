@@ -1,5 +1,5 @@
 import {Component, input, InputSignal} from '@angular/core';
-import {CalendarPlugin} from '../../../../../models/CalendarPlugin';
+import {CalendarPlugin} from '../../../../calendar/CalendarPlugin';
 
 @Component({
   selector: 'lin-network-config',

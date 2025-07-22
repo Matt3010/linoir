@@ -45,7 +45,7 @@ export class RenderKioskComponent implements AfterViewInit, OnDestroy {
       await new Promise(requestAnimationFrame);
 
       Flip.from(state, {
-        duration: 0.3,
+        duration: 1,
         ease: 'power1.inOut',
         absolute: true,
         stagger: 0.05

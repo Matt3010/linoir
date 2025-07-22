@@ -1,6 +1,6 @@
-import {BasePlugin} from './BasePlugin';
-import {WebsocketService} from '../../../common/services/websocket.service';
-import {PluginManifest} from '../services/plugin-loader.service';
+import {BasePlugin} from '../../models/BasePlugin';
+import {WebsocketService} from '../../../../common/services/websocket.service';
+import {PluginManifest} from '../../services/plugin-loader.service';
 
 export class CalendarPlugin extends BasePlugin {
   constructor(

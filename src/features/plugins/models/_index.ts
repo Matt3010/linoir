@@ -1,2 +1,2 @@
-export * from './CalendarPlugin';
-export * from './NetworkConfigPlugin';
+export * from '../available/calendar/CalendarPlugin';
+export * from '../available/network-config/NetworkConfigPlugin';

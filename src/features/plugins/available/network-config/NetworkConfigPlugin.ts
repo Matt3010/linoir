@@ -1,6 +1,6 @@
-import {BaseMessagePayload, BasePlugin} from './BasePlugin';
-import {PluginManifest} from '../services/plugin-loader.service';
-import {WebsocketService} from '../../../common/services/websocket.service';
+import {BaseMessagePayload, BasePlugin} from '../../models/BasePlugin';
+import {PluginManifest} from '../../services/plugin-loader.service';
+import {WebsocketService} from '../../../../common/services/websocket.service';
 
 interface NetworkMessagePayload extends BaseMessagePayload {
   local_ip: string;
