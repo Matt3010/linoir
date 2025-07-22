@@ -1,40 +1,87 @@
-import {AfterViewInit, Component, QueryList, ViewChildren, ViewContainerRef,} from '@angular/core';
+import {AfterViewInit, Component, OnDestroy, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {BasePlugin} from '../../../plugins/models/BasePlugin';
 import {RenderType} from '../../enums/render-type';
+import {Flip} from 'gsap/Flip';
 
 @Component({
   selector: 'lin-render-preview',
   standalone: true,
   imports: [],
   template: `
-    <div class="d-flex flex-wrap">
+    <div class="d-flex flex-wrap h-100 gap-2 p-2 flip-container">
       @for (plugin of filteredPlugins(pluginLoader.plugins); track $index) {
-        <div class="flex-grow-1">
+        <div class="flex-grow-1 bg-danger rounded target p-2">
           <ng-template #pluginContainer></ng-template>
         </div>
       }
     </div>
   `
 })
-export class RenderKioskComponent implements AfterViewInit {
+export class RenderKioskComponent implements AfterViewInit, OnDestroy {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;
 
   private readonly renderType: RenderType = RenderType.Kiosk;
+  private resizeObserver: ResizeObserver | null = null;
 
   constructor(protected readonly pluginLoader: PluginLoaderService) {
   }
 
-  filteredPlugins(plugins: BasePlugin[]): BasePlugin[] {
-    return plugins
-      .filter((p: BasePlugin): boolean => p.configuration.active);
+  protected filteredPlugins(plugins: BasePlugin[]): BasePlugin[] {
+    return plugins.filter((p: BasePlugin): boolean => p.configuration.active);
   }
 
   public ngAfterViewInit(): void {
-    const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.filteredPlugins(this.pluginLoader.plugins), this.containers, this.renderType);
+    const renderCallback = async (): Promise<void> => {
+      await this.pluginLoader.render(
+        this.filteredPlugins(this.pluginLoader.plugins),
+        this.containers,
+        this.renderType
+      );
+
+      const state: Flip.FlipState = Flip.getState('.target');
+
+      await new Promise(requestAnimationFrame);
+
+      Flip.from(state, {
+        duration: 0.3,
+        ease: 'power1.inOut',
+        absolute: true,
+        stagger: 0.05
+      });
+    };
+
     this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
-    renderCallback().then();
+
+    renderCallback().then((): void => {
+      this.listenForResizeForFLIP();
+    });
   }
 
+  private listenForResizeForFLIP(): void {
+    const container: Element | null = document.querySelector('.flip-container');
+    if (container) {
+      this.resizeObserver = new ResizeObserver((): void => {
+        const state: Flip.FlipState = Flip.getState('.target');
+
+        requestAnimationFrame((): void => {
+          Flip.from(state, {
+            duration: 0.4,
+            ease: 'power1.inOut',
+            absolute: true,
+            stagger: 0.03
+          });
+        });
+      });
+
+      this.resizeObserver.observe(container);
+    }
+  }
+
+  public ngOnDestroy(): void {
+    if (this.resizeObserver) {
+      this.resizeObserver.disconnect();
+    }
+  }
 }

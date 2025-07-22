@@ -5,7 +5,10 @@ import {provideHttpClient, withFetch} from '@angular/common/http';
 import {WebsocketService} from './common/services/websocket.service';
 import {PluginLoaderService} from './features/plugins/services/plugin-loader.service';
 import {RenderResolver} from './features/render/resolvers/render.resolver';
+import {gsap} from 'gsap';
+import {Flip} from 'gsap/Flip';
 
+gsap.registerPlugin(Flip);
 
 export const appConfig: ApplicationConfig = {
   providers: [
