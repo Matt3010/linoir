@@ -18,6 +18,16 @@ gsap.registerPlugin(Draggable);
       }
     </div>
     <ng-container #container></ng-container>
+  `,
+  styles: `
+    .inertia-element {
+      opacity: 0.7;
+      transition: opacity 0.3s ease-in-out;
+
+      &:hover {
+        opacity: 1;
+      }
+    }
   `
 })
 export class RenderContainerComponent implements OnInit, AfterViewInit {
