@@ -7,8 +7,12 @@ import {PluginLoaderService} from './features/plugins/services/plugin-loader.ser
 import {RenderResolver} from './features/render/resolvers/render.resolver';
 import {gsap} from 'gsap';
 import {Flip} from 'gsap/Flip';
+import {InertiaPlugin} from 'gsap/InertiaPlugin';
+import {Draggable} from 'gsap/Draggable';
 
 gsap.registerPlugin(Flip);
+gsap.registerPlugin(InertiaPlugin);
+gsap.registerPlugin(Draggable)
 
 export const appConfig: ApplicationConfig = {
   providers: [

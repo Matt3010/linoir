@@ -10,17 +10,6 @@ export const LAYOUT_ROUTES: Routes = [
     component: MainLayout,
     children: [
       {
-        path: RoutesDefinition.admin,
-        loadComponent: () =>
-          import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
-        resolve: {
-          hostComponent: RenderResolver
-        },
-        data: {
-          scope: RenderType.Admin
-        }
-      },
-      {
         path: RoutesDefinition.kiosk,
         loadComponent: () =>
           import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
@@ -30,7 +19,25 @@ export const LAYOUT_ROUTES: Routes = [
         data: {
           scope: RenderType.Kiosk
         }
-      }
+      },
+      {
+        path: RoutesDefinition.admin,
+        loadComponent: () =>
+          import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
+        resolve: {
+          hostComponent: RenderResolver
+        },
+        data: {
+          scope: RenderType.Admin
+        },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../render/components/render-kiosk/render-kiosk.component').then(m => m.RenderKioskComponent),
+          }
+        ]
+      },
     ]
-  }
+  },
 ];
