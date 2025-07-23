@@ -77,7 +77,7 @@ export class RenderContainerComponent implements OnInit, AfterViewInit {
 
       this.draggableInstance = Draggable.create(element, {
         bounds: containerElement,
-        edgeResistance: 0.4,
+        edgeResistance: 0.7,
         type: 'x,y',
         inertia: true,
       });
