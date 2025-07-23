@@ -51,17 +51,17 @@ export class RenderContainerComponent implements OnInit, AfterViewInit {
   }
 
   protected initInertia(): void {
-    const containerElement = document.querySelector<HTMLElement>('.inertia-container');
-    const element = document.querySelector<HTMLElement>('.inertia-element');
+    const containerElement: HTMLElement | null = document.querySelector<HTMLElement>('.inertia-container');
+    const inertiaElement: HTMLElement | null = document.querySelector<HTMLElement>('.inertia-element');
 
-    if (containerElement && element) {
+    if (containerElement && inertiaElement) {
       gsap.set(containerElement, {
         width: window.innerWidth,
         height: window.innerHeight,
         pointerEvents: 'none',
       });
 
-      gsap.set(element, {
+      gsap.set(inertiaElement, {
         width: 800,
         height: 300,
         x: window.innerWidth,
@@ -75,7 +75,7 @@ export class RenderContainerComponent implements OnInit, AfterViewInit {
         this.draggableInstance = [];
       }
 
-      this.draggableInstance = Draggable.create(element, {
+      this.draggableInstance = Draggable.create(inertiaElement, {
         bounds: containerElement,
         edgeResistance: 0.7,
         type: 'x,y',
