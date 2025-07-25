@@ -1,9 +1,20 @@
 services:
-  linoir:
+  frontend:
     build:
       context: .
-      dockerfile: Dockerfile
+      target: nginx-builder
     ports:
       - "8080:80"
-    container_name: frontend
-    restart: unless-stopped
+    networks:
+      - app-network
+
+  backend-ws:
+    build:
+      context: .
+      target: service-builder
+    networks:
+      - app-network
+
+networks:
+  app-network:
+    driver: bridge

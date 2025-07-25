@@ -3,6 +3,7 @@ import {RouterOutlet} from '@angular/router';
 import {Subscription} from 'rxjs';
 import {WebsocketService} from './common/services/websocket.service';
 import {HttpClient} from '@angular/common/http';
+import {environment} from './environments/environment';
 
 interface ServerConfig {
   ip: string;
@@ -27,16 +28,21 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-    this.http.get<ServerConfig>('/server-config.json').subscribe({
-      next: (config) => {
-        const wsUrl = `ws://${config.ip}:3333`;
-        this.wsService.connect(wsUrl);
-      },
-      error: (err): void => {
-        console.error('Error loading config:', err);
-      }
-    });
+    const connectToWebSocket = (ip: string) => {
+      const wsUrl = `ws://${ip}:3333`;
+      this.wsService.connect(wsUrl);
+    };
+
+    if (environment.production) {
+      connectToWebSocket('backend-ws');
+    } else {
+      this.http.get<ServerConfig>('/server-config.json').subscribe({
+        next: (config) => connectToWebSocket(config.ip),
+        error: (err) => console.error('Error loading config:', err)
+      });
+    }
   }
+
 
   ngOnDestroy(): void {
     this.wsSub?.unsubscribe();

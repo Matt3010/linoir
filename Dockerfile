@@ -9,16 +9,26 @@ RUN npm install
 COPY . .
 RUN npm run build --prod
 
-FROM nginx:stable-alpine
+# Stage 2: Nginx per Angular static
+FROM nginx:stable-alpine AS nginx-builder
 
-# Copia configurazione Nginx
 COPY nginx/default.conf /etc/nginx/conf.d/default.conf
-
 RUN rm -rf /usr/share/nginx/html/*
-
-# Copia build Angular
 COPY --from=build /app/dist/ /usr/share/nginx/html
 
 EXPOSE 80
-
 CMD ["nginx", "-g", "daemon off;"]
+
+# Stage 3: WebSocket backend
+FROM node:22 AS service-builder
+
+WORKDIR /app
+
+COPY service/package.json service/package-lock.json* ./service/
+
+WORKDIR /app/service
+RUN npm install
+
+COPY service ./service
+
+CMD ["node", "service/index.js"]
