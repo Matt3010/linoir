@@ -2,7 +2,8 @@
   "name": "linoir",
   "version": "0.0.0",
   "scripts": {
-    "start:ws": "cross-env NODE_ENV=development node service/index.js"
+    "start:ws": "cross-env NODE_ENV=development node service/index.js",
+    "build": "ng build"
   },
   "private": false,
   "dependencies": {
