@@ -11,7 +11,8 @@ export class CalendarPlugin extends BasePlugin {
 
     if (!localStorage.getItem(`${this.key()}`)) {
       this.configuration = {
-        active: false
+        active: false,
+        lastUpdatedAt: new Date()
       }
     }
   }

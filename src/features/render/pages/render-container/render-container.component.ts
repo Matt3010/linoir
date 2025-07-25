@@ -21,12 +21,7 @@ gsap.registerPlugin(Draggable);
   `,
   styles: `
     .inertia-element {
-      opacity: 0.7;
-      transition: opacity 0.3s ease-in-out;
-
-      &:hover {
-        opacity: 1;
-      }
+      filter: grayscale(1) brightness(2.5);
     }
   `
 })
@@ -72,8 +67,8 @@ export class RenderContainerComponent implements OnInit, AfterViewInit {
       });
 
       gsap.set(inertiaElement, {
-        width: 800,
-        height: 300,
+        width: 400,
+        height: 150,
         x: window.innerWidth,
         y: window.innerHeight,
         scale: 0.3,

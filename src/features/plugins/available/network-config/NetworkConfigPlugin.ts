@@ -16,7 +16,8 @@ export class NetworkConfigPlugin extends BasePlugin<NetworkMessagePayload> {
     if (!localStorage.getItem(`${this.key()}`)) {
       this.configuration = {
         active: true,
-        local_ip: 'ciao'
+        local_ip: 'ciao',
+        lastUpdatedAt: new Date()
       }
     }
   }

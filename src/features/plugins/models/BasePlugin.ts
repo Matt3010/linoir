@@ -5,6 +5,7 @@ import {RenderType} from '../../render/enums/render-type';
 
 export interface BaseMessagePayload {
   active: boolean;
+  lastUpdatedAt: Date
 }
 
 export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = BaseMessagePayload> {
@@ -30,6 +31,7 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
     protected readonly webSocketService: WebsocketService
   ) {
     this.listenTopic().subscribe((res: Message<GenericConfig>): void => {
+      res.payload.lastUpdatedAt = new Date();
       this.configuration = res.payload;
     });
   }
@@ -51,6 +53,12 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   public toggle(): void {
     const currentConfig: GenericConfig = this.configuration;
     const newConfiguration: GenericConfig = {...currentConfig, active: !currentConfig.active};
+    this.sendMessage(newConfiguration)
+  }
+
+  public setActive(): void {
+    const currentConfig: GenericConfig = this.configuration;
+    const newConfiguration: GenericConfig = {...currentConfig, active: true};
     this.sendMessage(newConfiguration)
   }
 

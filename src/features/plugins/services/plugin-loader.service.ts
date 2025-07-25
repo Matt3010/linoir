@@ -3,13 +3,11 @@ import {BasePlugin} from '../models/BasePlugin';
 import {WebsocketService} from '../../../common/services/websocket.service';
 import {CalendarPlugin, NetworkConfigPlugin} from '../models/_index'
 import {RenderType} from '../../render/enums/render-type';
-import {v4 as uuidv4} from 'uuid';
 
 export interface PluginVariant {
   scope: RenderType;
   componentName: string;
   loader: () => Promise<Record<string, Type<unknown>>>;
-  id: string,
 }
 
 export interface PluginManifest {
@@ -29,7 +27,6 @@ const PLUGINS: PluginManifest[] = [
     class: CalendarPlugin,
     variants: [
       {
-        id: uuidv4(),
         scope: RenderType.Admin,
         componentName: 'AdminCalendarComponent',
         loader: () =>
@@ -38,7 +35,6 @@ const PLUGINS: PluginManifest[] = [
             ),
       },
       {
-        id: uuidv4(),
         scope: RenderType.Kiosk,
         componentName: 'KioskCalendarComponent',
         loader: () =>
@@ -53,7 +49,6 @@ const PLUGINS: PluginManifest[] = [
     class: NetworkConfigPlugin,
     variants: [
       {
-        id: uuidv4(),
         scope: RenderType.Admin,
         componentName: 'NetworkConfigComponent',
         loader: () =>
@@ -62,7 +57,6 @@ const PLUGINS: PluginManifest[] = [
             ),
       },
       {
-        id: uuidv4(),
         scope: RenderType.Kiosk,
         componentName: 'NetworkConfigComponent',
         loader: () =>
@@ -144,9 +138,9 @@ export class PluginLoaderService {
 
   public initializeConfigurationChangeListeners(callback: () => void | Promise<void>): void {
     this.plugins.forEach((plugin: BasePlugin): void => {
-      plugin.configurationChangeEvent.subscribe(() => {
+      plugin.configurationChangeEvent.subscribe((): void => {
         if (callback) {
-          requestAnimationFrame(() => {
+          requestAnimationFrame((): void => {
             callback();
           });
         }
@@ -155,9 +149,8 @@ export class PluginLoaderService {
   }
 
   public async render(plugins: BasePlugin[], containers: QueryList<ViewContainerRef>, scope: RenderType): Promise<void> {
-    const filteredPlugins: BasePlugin[] = plugins;
-    for (let i: number = 0; i < filteredPlugins.length; i++) {
-      const plugin: BasePlugin = filteredPlugins[i];
+    for (let i: number = 0; i < plugins.length; i++) {
+      const plugin: BasePlugin = plugins[i];
       const res: LoadedPluginComponent = await this.getComponent(plugin, scope);
       const container: ViewContainerRef | undefined = containers.get(i);
 

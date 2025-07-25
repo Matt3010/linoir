@@ -6,14 +6,15 @@ import {RenderType} from '../../enums/render-type';
   selector: 'lin-render-admin',
   standalone: true,
   template: `
-    @for (plugin of this.pluginLoader.plugins; track $index) {
+    @for (_ of this.pluginLoader.plugins; track $index) {
       <ng-template #pluginContainer></ng-template>
+      <hr>
     }
   `
 })
 export class RenderAdminComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
-  containers!: QueryList<ViewContainerRef>;
+  pluginContainers: QueryList<ViewContainerRef> | undefined = undefined;
 
   private readonly renderType: RenderType = RenderType.Admin;
 
@@ -21,8 +22,10 @@ export class RenderAdminComponent implements AfterViewInit {
   }
 
   public ngAfterViewInit(): void {
-    const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.pluginLoader.plugins, this.containers, this.renderType).catch(console.error);
-    this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
-    renderCallback().then();
+    if (this.pluginContainers !== undefined) {
+      const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.pluginLoader.plugins, this.pluginContainers as QueryList<ViewContainerRef>, this.renderType).catch(console.error);
+      this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
+      renderCallback().then();
+    }
   }
 }
