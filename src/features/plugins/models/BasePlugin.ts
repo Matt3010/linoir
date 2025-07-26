@@ -1,9 +1,7 @@
 import {Message, WebsocketService} from '../../../common/services/websocket.service';
 import {Observable, Subject} from 'rxjs';
 import {RenderType} from '../../render/enums/render-type';
-import {PluginVariant} from '../entities/plugin-variant';
-import {PluginManifest} from '../entities/plugin-mainfest';
-import {BaseMessagePayload} from '../entities/base-message-payload';
+import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities';
 
 
 export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = BaseMessagePayload> {
@@ -46,30 +44,6 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   public get configuration(): GenericConfig {
     const storedMemoryJson: string = localStorage.getItem(`${this.key()}`)!;
     return JSON.parse(storedMemoryJson) as GenericConfig;
-  }
-
-  toggleDock(): void {
-    const currentConfig = this.configuration;
-    const newConfig = {...currentConfig, dockActive: !currentConfig.dockActive};
-    this.sendMessage(newConfig);
-  }
-
-  toggleKiosk(): void {
-    const currentConfig = this.configuration;
-    const newConfig = {...currentConfig, kioskActive: !currentConfig.kioskActive};
-    this.sendMessage(newConfig);
-  }
-
-  setKioskActive(): void {
-    const currentConfig = this.configuration;
-    const newConfig = {...currentConfig, kioskActive: true};
-    this.sendMessage(newConfig);
-  }
-
-  setDockActive(): void {
-    const currentConfig = this.configuration;
-    const newConfig = {...currentConfig, dockActive: true};
-    this.sendMessage(newConfig);
   }
 
   public listenTopic(): Observable<Message<GenericConfig>> {

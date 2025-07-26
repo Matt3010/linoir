@@ -1,9 +1,8 @@
 import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
-import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
+import {PluginLoaderService, PossiblePlugin} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 import {RouterOutlet} from '@angular/router';
 import {environment} from '../../../../environments/environment';
-import {BasePlugin} from '../../../plugins/models/BasePlugin';
 
 @Component({
   selector: 'lin-render-preview',
@@ -33,7 +32,7 @@ import {BasePlugin} from '../../../plugins/models/BasePlugin';
 export class RenderKioskComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;
-  public activePlugins: BasePlugin[] = [];
+  public activePlugins: PossiblePlugin[] = [];
 
   private readonly renderType: RenderType = RenderType.Kiosk;
 
@@ -44,12 +43,12 @@ export class RenderKioskComponent implements AfterViewInit {
   }
 
   private filterAndRender(): void {
-    this.activePlugins = this.pluginLoader.plugins.filter((p: BasePlugin): boolean => p.configuration.kioskActive);
+    this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugin): boolean => p.configuration.kioskActive);
     if (this.activePlugins.length === 0) {
-      const networkPlugin: BasePlugin | undefined =
+      const networkPlugin: PossiblePlugin | undefined =
         this.pluginLoader
           .plugins
-          .find((pl: BasePlugin) => pl instanceof environment.fallbackAllDeactivated);
+          .find((pl: PossiblePlugin) => pl instanceof environment.fallbackAllDeactivated);
       if (networkPlugin) {
         networkPlugin.setKioskActive()
       }

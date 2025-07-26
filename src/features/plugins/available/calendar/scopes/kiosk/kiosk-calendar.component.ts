@@ -1,5 +1,6 @@
 import {Component, input, InputSignal} from '@angular/core';
 import {CalendarPlugin} from '../../CalendarPlugin';
+import {WithKioskable} from '../../../../models';
 
 @Component({
   selector: 'lin-kiosk-calendar',
@@ -9,6 +10,6 @@ import {CalendarPlugin} from '../../CalendarPlugin';
 })
 export class KioskCalendarComponent {
 
-  public classInput: InputSignal<CalendarPlugin> = input.required<CalendarPlugin>();
+  public classInput: InputSignal<WithKioskable<CalendarPlugin>> = input.required<WithKioskable<CalendarPlugin>>();
 
 }

@@ -1,20 +1,30 @@
 import {ComponentRef, Injectable, QueryList, Type, ViewContainerRef} from '@angular/core';
-import {BasePlugin} from '../models/BasePlugin';
 import {WebsocketService} from '../../../common/services/websocket.service';
-import {CalendarPlugin, NetworkConfigPlugin,} from '../models/_index'
+import {
+  CalendarPlugin,
+  DockableMixin,
+  KioskableMixin,
+  NetworkConfigPlugin,
+  WithDockable,
+  WithKioskable,
+} from '../models'
 import {RenderType} from '../../render/enums/render-type';
-import {PluginVariant} from '../entities/plugin-variant';
-import {PluginManifest} from '../entities/plugin-mainfest';
+import {PluginManifest, PluginVariant} from '../entities';
 
 interface LoadedPluginComponent {
   component: Type<unknown>;
-  plugin: BasePlugin;
+  plugin: PossiblePlugin;
 }
+
+export type PossiblePlugin =
+  | WithKioskable<CalendarPlugin>
+  | WithDockable<WithKioskable<NetworkConfigPlugin>>
+
 
 const PLUGINS: PluginManifest[] = [
   {
     key: 'calendar',
-    class: CalendarPlugin,
+    class: KioskableMixin(CalendarPlugin),
     variants: [
       {
         scope: RenderType.Admin,
@@ -36,7 +46,7 @@ const PLUGINS: PluginManifest[] = [
   },
   {
     key: 'network-config',
-    class: NetworkConfigPlugin,
+    class: KioskableMixin(DockableMixin(NetworkConfigPlugin)),
     variants: [
       {
         scope: RenderType.Admin,
@@ -68,9 +78,9 @@ const PLUGINS: PluginManifest[] = [
 
 @Injectable()
 export class PluginLoaderService {
-  private readonly _plugins: BasePlugin[] = [];
+  private readonly _plugins: PossiblePlugin[] = [];
 
-  public get plugins(): BasePlugin[] {
+  public get plugins(): PossiblePlugin[] {
     return this._plugins;
   }
 
@@ -84,7 +94,7 @@ export class PluginLoaderService {
     for (const manifest of PLUGINS) {
       for (const v of manifest.variants) {
         if (manifest.class) {
-          const found: BasePlugin | undefined = this._plugins.find((p: BasePlugin): boolean => p instanceof manifest.class)
+          const found: PossiblePlugin | undefined = this._plugins.find((p: PossiblePlugin): boolean => p instanceof manifest.class)
           if (found) {
             found.addVariant(v.scope, v);
           } else {
@@ -95,14 +105,14 @@ export class PluginLoaderService {
             );
           }
         } else {
-          throw new Error('BasePlugin class not defined for ' + manifest.key);
+          throw new Error('PossiblePlugin class not defined for ' + manifest.key);
         }
       }
     }
   }
 
 
-  private async getComponent(plugin: BasePlugin, scope: RenderType): Promise<LoadedPluginComponent> {
+  private async getComponent(plugin: PossiblePlugin, scope: RenderType): Promise<LoadedPluginComponent> {
     const manifest: PluginManifest | undefined = PLUGINS.find((m: PluginManifest): boolean => m.key === plugin.key());
     if (!manifest) {
       throw new Error(`Plugin '${plugin.key}' non trovato`);
@@ -135,7 +145,7 @@ export class PluginLoaderService {
 
 
   public initializeConfigurationChangeListeners(callback: () => void | Promise<void>): void {
-    this.plugins.forEach((plugin: BasePlugin): void => {
+    this.plugins.forEach((plugin: PossiblePlugin): void => {
       plugin.configurationChangeEvent.subscribe((): void => {
         if (callback) {
           requestAnimationFrame((): void => {
@@ -146,9 +156,9 @@ export class PluginLoaderService {
     });
   }
 
-  public async render(plugins: BasePlugin[], containers: QueryList<ViewContainerRef>, scope: RenderType): Promise<void> {
+  public async render(plugins: PossiblePlugin[], containers: QueryList<ViewContainerRef>, scope: RenderType): Promise<void> {
     for (let i: number = 0; i < plugins.length; i++) {
-      const plugin: BasePlugin = plugins[i];
+      const plugin: PossiblePlugin = plugins[i];
       const res: LoadedPluginComponent = await this.getComponent(plugin, scope);
       const container: ViewContainerRef | undefined = containers.get(i);
 
