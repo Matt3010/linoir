@@ -10,7 +10,7 @@ export const manifest: PluginManifest[] = [
     variants: [
       {
         scope: RenderType.Admin,
-        componentName: 'AdminNetworkConfigComponent',
+        UIComponentClassName: 'AdminNetworkConfigComponent',
         loader: () =>
           import(
             './scopes/admin/admin-network-config.component'
@@ -18,7 +18,7 @@ export const manifest: PluginManifest[] = [
       },
       {
         scope: RenderType.Kiosk,
-        componentName: 'KioskNetworkConfigComponent',
+        UIComponentClassName: 'KioskNetworkConfigComponent',
         loader: () =>
           import(
             './scopes/kiosk/kiosk-network-config.component'
@@ -26,7 +26,7 @@ export const manifest: PluginManifest[] = [
       },
       {
         scope: RenderType.Dock,
-        componentName: 'DockNetworkConfigComponent',
+        UIComponentClassName: 'DockNetworkConfigComponent',
         loader: () =>
           import(
             './scopes/dock/dock-network-config.component'

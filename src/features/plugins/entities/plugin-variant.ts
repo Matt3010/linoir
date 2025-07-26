@@ -3,6 +3,6 @@ import {Type} from '@angular/core';
 
 export interface PluginVariant {
   scope: RenderType;
-  componentName: string;
+  UIComponentClassName: string;
   loader: () => Promise<Record<string, Type<unknown>>>;
 }

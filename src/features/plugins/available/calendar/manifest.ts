@@ -10,7 +10,7 @@ export const manifest: PluginManifest[] = [
     variants: [
       {
         scope: RenderType.Admin,
-        componentName: 'AdminCalendarComponent',
+        UIComponentClassName: 'AdminCalendarComponent',
         loader: () =>
           import(
             './scopes/admin/admin-calendar.component'
@@ -18,7 +18,7 @@ export const manifest: PluginManifest[] = [
       },
       {
         scope: RenderType.Kiosk,
-        componentName: 'KioskCalendarComponent',
+        UIComponentClassName: 'KioskCalendarComponent',
         loader: () =>
           import(
             './scopes/kiosk/kiosk-calendar.component'

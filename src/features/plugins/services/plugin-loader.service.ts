@@ -60,7 +60,7 @@ export class PluginLoaderService {
     const variant: PluginVariant | undefined = manifest.variants.find(
       (v: PluginVariant): boolean =>
         v.scope === plugin.scope(scope) &&
-        v.componentName === plugin.componentName(scope)
+        v.UIComponentClassName === plugin.componentName(scope)
     );
     if (!variant) {
       throw new Error(
@@ -69,10 +69,10 @@ export class PluginLoaderService {
     }
 
     const module: Record<string, Type<unknown>> = await variant.loader();
-    const component: Type<unknown> = module[variant.componentName];
+    const component: Type<unknown> = module[variant.UIComponentClassName];
     if (!component) {
       throw new Error(
-        `Componente '${variant.componentName}' non trovato nel plugin '${plugin.key}'`
+        `Componente '${variant.UIComponentClassName}' non trovato nel plugin '${plugin.key}'`
       );
     }
 

@@ -8,11 +8,10 @@ function generateManifest() {
 
   try {
     const manifestContent = `export const manifest = [];\n`;
-
     fs.writeFileSync(OUTPUT_FILE, manifestContent, 'utf-8');
-    console.log('✅ Manifest generato con successo!');
+    console.log('✅ Empty manifest file created successfully.');
   } catch (err) {
-    console.error('❌ Errore nella generazione del manifest:', err);
+    console.error('❌ Error while creating empty manifest file:', err);
   }
 
   function findManifestFiles(dir) {
@@ -30,30 +29,30 @@ function generateManifest() {
 
   try {
     const manifests = findManifestFiles(PLUGIN_DIR).sort();
-    console.log(`Trovati ${manifests.length} manifest:`, manifests);
+    console.log(`Found ${manifests.length} manifest file(s):`, manifests);
 
     let imports = '';
     let manifestArray = 'export const PLUGINS: PluginManifest[] = [\n';
 
     manifests.forEach((file, idx) => {
       const relativePath = path.relative(path.dirname(OUTPUT_FILE), file).replace(/\.ts$/, '');
-      const importPath = './' + relativePath.split(path.sep).join('/'); // Usa path POSIX
+      const importPath = './' + relativePath.split(path.sep).join('/');
       const varName = `manifest${idx}`;
       imports += `import { manifest as ${varName} } from '${importPath}';\n`;
-      manifestArray += `...${varName},\n`;
+      manifestArray += `  ...${varName},\n`;
     });
 
     manifestArray += '];\n';
 
     const fileContent =
       `// Auto-generated file. Do not modify manually.\n` +
-      `import {PluginManifest} from '../entities';\n\n` +
+      `import { PluginManifest } from '../entities';\n\n` +
       `${imports}\n${manifestArray}`;
 
     fs.writeFileSync(OUTPUT_FILE, fileContent);
-    console.log('✅ File plugins.manifest.ts generato con successo!');
+    console.log('✅ plugins.manifest.ts generated successfully.');
   } catch (error) {
-    console.error('❌ Errore nella generazione del manifest:', error);
+    console.error('❌ Error while generating plugins.manifest.ts:', error);
     process.exit(1);
   }
 }

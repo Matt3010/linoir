@@ -19,7 +19,7 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   }
 
   public componentName(scope: RenderType): string {
-    return this._variants.get(scope)?.componentName ?? '';
+    return this._variants.get(scope)?.UIComponentClassName ?? '';
   }
 
   protected constructor(
