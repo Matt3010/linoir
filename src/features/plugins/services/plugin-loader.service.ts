@@ -60,11 +60,11 @@ export class PluginLoaderService {
     const variant: PluginVariant | undefined = manifest.variants.find(
       (v: PluginVariant): boolean =>
         v.scope === plugin.scope(scope) &&
-        v.UIComponentClassName === plugin.componentName(scope)
+        v.UIComponentClassName === plugin.UIComponentClassName(scope)
     );
     if (!variant) {
       throw new Error(
-        `Variant for scope '${plugin.scope(scope)}' and component '${plugin.componentName(scope)}' not found`
+        `Variant for scope '${plugin.scope(scope)}' and component '${plugin.UIComponentClassName(scope)}' not found`
       );
     }
 
