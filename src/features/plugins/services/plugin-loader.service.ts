@@ -1,15 +1,9 @@
 import {ComponentRef, Injectable, QueryList, Type, ViewContainerRef} from '@angular/core';
 import {WebsocketService} from '../../../common/services/websocket.service';
-import {
-  CalendarPlugin,
-  DockableMixin,
-  KioskableMixin,
-  NetworkConfigPlugin,
-  WithDockable,
-  WithKioskable,
-} from '../models'
+import {CalendarPlugin, NetworkConfigPlugin, WithDockable, WithKioskable,} from '../models'
 import {RenderType} from '../../render/enums/render-type';
 import {PluginManifest, PluginVariant} from '../entities';
+import {PLUGINS} from '../utils/plugins.manifest';
 
 interface LoadedAngularComponentWithPluginClass {
   component: Type<unknown>;
@@ -20,61 +14,6 @@ export type PossiblePlugin =
   | WithKioskable<CalendarPlugin>
   | WithDockable<WithKioskable<NetworkConfigPlugin>>
 
-
-const PLUGINS: PluginManifest[] = [
-  {
-    key: 'calendar',
-    class: KioskableMixin(CalendarPlugin),
-    variants: [
-      {
-        scope: RenderType.Admin,
-        componentName: 'AdminCalendarComponent',
-        loader: () =>
-          import(
-            '../available/calendar/scopes/admin/admin-calendar.component'
-            ),
-      },
-      {
-        scope: RenderType.Kiosk,
-        componentName: 'KioskCalendarComponent',
-        loader: () =>
-          import(
-            '../available/calendar/scopes/kiosk/kiosk-calendar.component'
-            ),
-      },
-    ],
-  },
-  {
-    key: 'network-config',
-    class: KioskableMixin(DockableMixin(NetworkConfigPlugin)),
-    variants: [
-      {
-        scope: RenderType.Admin,
-        componentName: 'AdminNetworkConfigComponent',
-        loader: () =>
-          import(
-            '../available/network-config/scopes/admin/admin-network-config.component'
-            ),
-      },
-      {
-        scope: RenderType.Kiosk,
-        componentName: 'KioskNetworkConfigComponent',
-        loader: () =>
-          import(
-            '../available/network-config/scopes/kiosk/kiosk-network-config.component'
-            ),
-      },
-      {
-        scope: RenderType.Dock,
-        componentName: 'DockNetworkConfigComponent',
-        loader: () =>
-          import(
-            '../available/network-config/scopes/dock/dock-network-config.component'
-            ),
-      },
-    ],
-  },
-];
 
 @Injectable()
 export class PluginLoaderService {
