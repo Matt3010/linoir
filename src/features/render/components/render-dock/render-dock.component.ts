@@ -7,7 +7,7 @@ import {RenderType} from '../../enums/render-type';
   standalone: true,
   imports: [],
   template: `
-    <div class="bg-danger bottom-0 end-0 dock-container rounded">
+    <div class="bg-danger dock-container rounded">
       @for (plugin of activePlugins; track plugin.configuration) {
         <ng-template #pluginContainer></ng-template>
       }

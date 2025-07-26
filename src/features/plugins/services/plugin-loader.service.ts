@@ -11,7 +11,7 @@ import {
 import {RenderType} from '../../render/enums/render-type';
 import {PluginManifest, PluginVariant} from '../entities';
 
-interface LoadedPluginComponent {
+interface LoadedAngularComponentWithPluginClass {
   component: Type<unknown>;
   plugin: PossiblePlugin;
 }
@@ -112,7 +112,7 @@ export class PluginLoaderService {
   }
 
 
-  private async getComponent(plugin: PossiblePlugin, scope: RenderType): Promise<LoadedPluginComponent> {
+  private async getComponent(plugin: PossiblePlugin, scope: RenderType): Promise<LoadedAngularComponentWithPluginClass> {
     const manifest: PluginManifest | undefined = PLUGINS.find((m: PluginManifest): boolean => m.key === plugin.key());
     if (!manifest) {
       throw new Error(`Plugin '${plugin.key}' non trovato`);
@@ -159,7 +159,7 @@ export class PluginLoaderService {
   public async render(plugins: PossiblePlugin[], containers: QueryList<ViewContainerRef>, scope: RenderType): Promise<void> {
     for (let i: number = 0; i < plugins.length; i++) {
       const plugin: PossiblePlugin = plugins[i];
-      const res: LoadedPluginComponent = await this.getComponent(plugin, scope);
+      const res: LoadedAngularComponentWithPluginClass = await this.getComponent(plugin, scope);
       const container: ViewContainerRef | undefined = containers.get(i);
 
       if (!container) {
