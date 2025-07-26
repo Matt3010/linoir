@@ -2,11 +2,11 @@ import {Component, input, InputSignal} from '@angular/core';
 import {CalendarPlugin} from '../../../calendar/CalendarPlugin';
 
 @Component({
-  selector: 'lin-network-config',
+  selector: 'lin-kiosk-network-config',
   imports: [],
-  templateUrl: './network-config.component.html',
-  styleUrl: './network-config.component.css'
+  templateUrl: './kiosk-network-config.component.html',
+  styleUrl: './kiosk-network-config.component.css'
 })
-export class NetworkConfigComponent {
+export class KioskNetworkConfigComponent {
   public classInput: InputSignal<CalendarPlugin> = input.required<CalendarPlugin>();
 }

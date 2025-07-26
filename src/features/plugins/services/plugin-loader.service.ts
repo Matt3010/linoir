@@ -50,26 +50,26 @@ const PLUGINS: PluginManifest[] = [
     variants: [
       {
         scope: RenderType.Admin,
-        componentName: 'NetworkConfigComponent',
+        componentName: 'AdminNetworkConfigComponent',
         loader: () =>
           import(
-            '../available/network-config/scopes/admin/network-config.component'
+            '../available/network-config/scopes/admin/admin-network-config.component'
             ),
       },
       {
         scope: RenderType.Kiosk,
-        componentName: 'NetworkConfigComponent',
+        componentName: 'KioskNetworkConfigComponent',
         loader: () =>
           import(
-            '../available/network-config/scopes/kiosk/network-config.component'
+            '../available/network-config/scopes/kiosk/kiosk-network-config.component'
             ),
       },
       {
         scope: RenderType.Dock,
-        componentName: 'NetworkConfigComponent',
+        componentName: 'DockNetworkConfigComponent',
         loader: () =>
           import(
-            '../available/network-config/scopes/dock/network-config.component'
+            '../available/network-config/scopes/dock/dock-network-config.component'
             ),
       },
     ],

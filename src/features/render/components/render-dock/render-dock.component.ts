@@ -1,13 +1,19 @@
 import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
 import {PluginLoaderService, PossiblePlugin} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
+import {NgClass} from '@angular/common';
 
 @Component({
   selector: 'lin-render-preview',
   standalone: true,
-  imports: [],
+  imports: [
+    NgClass
+  ],
   template: `
-    <div class="bg-danger dock-container rounded">
+    <div [ngClass]="{
+      'small-height': activePlugins.length === 0,
+      'normal-height': activePlugins.length > 0
+    }" class="ps-3 py-2 pe-2 dock-container rounded bg-primary">
       @for (plugin of activePlugins; track plugin.configuration) {
         <ng-template #pluginContainer></ng-template>
       }
@@ -15,8 +21,15 @@ import {RenderType} from '../../enums/render-type';
   `,
   styles: `
     .dock-container {
-      width: 100%;
-      height: 70px;
+      transition: height 0.1s ease-in-out;
+
+      &.small-height {
+        height: 0
+      }
+
+      &.normal-height {
+        height: 70px;
+      }
     }
   `
 })

@@ -3,11 +3,11 @@ import {NetworkConfigPlugin} from '../../NetworkConfigPlugin';
 import {WithDockable, WithKioskable} from '../../../../models';
 
 @Component({
-  selector: 'lin-network-config',
+  selector: 'lin-admin-network-config',
   imports: [],
-  templateUrl: './network-config.component.html',
-  styleUrl: './network-config.component.css'
+  templateUrl: './admin-network-config.component.html',
+  styleUrl: './admin-network-config.component.css'
 })
-export class NetworkConfigComponent {
+export class AdminNetworkConfigComponent {
   public classInput: InputSignal<WithKioskable<WithDockable<NetworkConfigPlugin>>> = input.required<WithKioskable<WithDockable<NetworkConfigPlugin>>>();
 }
