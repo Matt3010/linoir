@@ -1,6 +1,6 @@
 import {BasePlugin} from '../../models/BasePlugin';
+import {PluginManifest} from '../../entities/plugin-mainfest';
 import {WebsocketService} from '../../../../common/services/websocket.service';
-import {PluginManifest} from '../../services/plugin-loader.service';
 
 export class CalendarPlugin extends BasePlugin {
   constructor(
@@ -11,8 +11,9 @@ export class CalendarPlugin extends BasePlugin {
 
     if (!localStorage.getItem(`${this.key()}`)) {
       this.configuration = {
-        active: false,
-        lastUpdatedAt: new Date()
+        kioskActive: false,
+        lastUpdatedAt: new Date(),
+        dockActive: false
       }
     }
   }

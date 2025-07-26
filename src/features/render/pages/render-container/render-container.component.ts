@@ -10,13 +10,15 @@ gsap.registerPlugin(Draggable);
   standalone: true,
   imports: [RouterOutlet],
   template: `
-    <div class="inertia-container position-fixed overflow-hidden">
-      @if (hasChildren) {
-        <div class="inertia-element">
-          <router-outlet></router-outlet>
-        </div>
-      }
-    </div>
+    @if (!skipRenderContainerRouter) {
+      <div class="inertia-container position-fixed overflow-hidden">
+        @if (hasChildren) {
+          <div class="inertia-element">
+            <router-outlet></router-outlet>
+          </div>
+        }
+      </div>
+    }
     <ng-container #container></ng-container>
   `,
   styles: `
@@ -26,6 +28,13 @@ gsap.registerPlugin(Draggable);
   `
 })
 export class RenderContainerComponent implements OnInit, AfterViewInit {
+
+  /**
+   * If true, the component will not render the router outlet with GSAP Inertia.
+   * Manual router outlet rendering is required in this case inside specific render components.
+   */
+  protected skipRenderContainerRouter: boolean = true;
+
   @ViewChild('container', {read: ViewContainerRef, static: true}) container!: ViewContainerRef;
   protected hasChildren = false;
 
@@ -38,6 +47,7 @@ export class RenderContainerComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
+    this.skipRenderContainerRouter = this.route.snapshot.data['skipRenderContainerRouter'];
     const componentType: Type<unknown> = this.route.snapshot.data['hostComponent'];
     if (componentType) {
       this.container.clear();

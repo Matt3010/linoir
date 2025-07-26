@@ -1,22 +1,12 @@
 import {ComponentRef, Injectable, QueryList, Type, ViewContainerRef} from '@angular/core';
 import {BasePlugin} from '../models/BasePlugin';
 import {WebsocketService} from '../../../common/services/websocket.service';
-import {CalendarPlugin, NetworkConfigPlugin} from '../models/_index'
+import {CalendarPlugin, NetworkConfigPlugin,} from '../models/_index'
 import {RenderType} from '../../render/enums/render-type';
+import {PluginVariant} from '../entities/plugin-variant';
+import {PluginManifest} from '../entities/plugin-mainfest';
 
-export interface PluginVariant {
-  scope: RenderType;
-  componentName: string;
-  loader: () => Promise<Record<string, Type<unknown>>>;
-}
-
-export interface PluginManifest {
-  key: string;
-  class: any;
-  variants: PluginVariant[];
-}
-
-export interface LoadedPluginComponent {
+interface LoadedPluginComponent {
   component: Type<unknown>;
   plugin: BasePlugin;
 }
@@ -31,7 +21,7 @@ const PLUGINS: PluginManifest[] = [
         componentName: 'AdminCalendarComponent',
         loader: () =>
           import(
-            '../available/calendar/scopes/admin/admin-calendar/admin-calendar.component'
+            '../available/calendar/scopes/admin/admin-calendar.component'
             ),
       },
       {
@@ -39,7 +29,7 @@ const PLUGINS: PluginManifest[] = [
         componentName: 'KioskCalendarComponent',
         loader: () =>
           import(
-            '../available/calendar/scopes/kiosk/kiosk-calendar/kiosk-calendar.component'
+            '../available/calendar/scopes/kiosk/kiosk-calendar.component'
             ),
       },
     ],
@@ -53,7 +43,7 @@ const PLUGINS: PluginManifest[] = [
         componentName: 'NetworkConfigComponent',
         loader: () =>
           import(
-            '../available/network-config/scopes/admin/network-config/network-config.component'
+            '../available/network-config/scopes/admin/network-config.component'
             ),
       },
       {
@@ -61,7 +51,15 @@ const PLUGINS: PluginManifest[] = [
         componentName: 'NetworkConfigComponent',
         loader: () =>
           import(
-            '../available/network-config/scopes/kiosk/network-config/network-config.component'
+            '../available/network-config/scopes/kiosk/network-config.component'
+            ),
+      },
+      {
+        scope: RenderType.Dock,
+        componentName: 'NetworkConfigComponent',
+        loader: () =>
+          import(
+            '../available/network-config/scopes/dock/network-config.component'
             ),
       },
     ],

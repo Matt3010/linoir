@@ -1,19 +1,31 @@
 import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
-import {BasePlugin} from '../../../plugins/models/BasePlugin';
 import {RenderType} from '../../enums/render-type';
+import {RouterOutlet} from '@angular/router';
 import {environment} from '../../../../environments/environment';
+import {BasePlugin} from '../../../plugins/models/BasePlugin';
 
 @Component({
   selector: 'lin-render-preview',
   standalone: true,
-  imports: [],
+  imports: [
+    RouterOutlet
+  ],
   template: `
-    <div class="d-flex flex-wrap h-100 gap-2 p-2 flip-container">
-      @for (plugin of activePlugins; track plugin.configuration) {
-        <div class="flex-grow-1 bg-danger rounded target ps-3 py-2 pe-2">
-          <ng-template #pluginContainer></ng-template>
-        </div>
+    <div class="d-flex flex-wrap h-100 gap-2 p-2">
+      @for (plugin of activePlugins; track plugin.configuration; let last = $last) {
+        @if (last) {
+          <div class="d-flex flex-column gap-1 flex-grow-1">
+            <div class="bg-primary flex-grow-1 rounded ps-3 py-2 pe-2">
+              <ng-template #pluginContainer></ng-template>
+            </div>
+            <router-outlet></router-outlet>
+          </div>
+        } @else {
+          <div class="flex-grow-1 bg-primary rounded ps-3 py-2 pe-2">
+            <ng-template #pluginContainer></ng-template>
+          </div>
+        }
       }
     </div>
   `
@@ -32,14 +44,14 @@ export class RenderKioskComponent implements AfterViewInit {
   }
 
   private filterAndRender(): void {
-    this.activePlugins = this.pluginLoader.plugins.filter((p: BasePlugin): boolean => p.configuration.active);
+    this.activePlugins = this.pluginLoader.plugins.filter((p: BasePlugin): boolean => p.configuration.kioskActive);
     if (this.activePlugins.length === 0) {
       const networkPlugin: BasePlugin | undefined =
         this.pluginLoader
           .plugins
-          .find((pl) => pl instanceof environment.fallbackAllDeactivated);
+          .find((pl: BasePlugin) => pl instanceof environment.fallbackAllDeactivated);
       if (networkPlugin) {
-        networkPlugin.setActive()
+        networkPlugin.setKioskActive()
       }
     }
     this.cdr.detectChanges();

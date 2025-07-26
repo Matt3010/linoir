@@ -17,8 +17,22 @@ export const LAYOUT_ROUTES: Routes = [
           hostComponent: RenderResolver
         },
         data: {
-          scope: RenderType.Kiosk
-        }
+          scope: RenderType.Kiosk,
+          skipRenderContainerRouter: true,
+        },
+        children: [
+          {
+            path: '',
+            loadComponent: () =>
+              import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
+            resolve: {
+              hostComponent: RenderResolver
+            },
+            data: {
+              scope: RenderType.Dock,
+            },
+          }
+        ]
       },
       {
         path: RoutesDefinition.admin,
@@ -28,13 +42,20 @@ export const LAYOUT_ROUTES: Routes = [
           hostComponent: RenderResolver
         },
         data: {
-          scope: RenderType.Admin
+          scope: RenderType.Admin,
+          skipRenderContainerRouter: false,
         },
         children: [
           {
             path: '',
             loadComponent: () =>
-              import('../render/components/render-kiosk/render-kiosk.component').then(m => m.RenderKioskComponent),
+              import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
+            resolve: {
+              hostComponent: RenderResolver
+            },
+            data: {
+              scope: RenderType.Kiosk,
+            },
           }
         ]
       },

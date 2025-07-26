@@ -1,5 +1,5 @@
 import {Component, input, InputSignal} from '@angular/core';
-import {CalendarPlugin} from '../../../CalendarPlugin';
+import {CalendarPlugin} from '../../CalendarPlugin';
 
 @Component({
   selector: 'lin-admin-calendar',

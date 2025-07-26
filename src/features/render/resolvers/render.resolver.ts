@@ -1,19 +1,23 @@
-import {Injectable, Type} from '@angular/core';
-import {ActivatedRouteSnapshot, Resolve} from '@angular/router';
+import {inject, Injectable, Type} from '@angular/core';
+import {ActivatedRouteSnapshot, Resolve, Router} from '@angular/router';
 import {RenderType} from '../enums/render-type';
-import {RenderKioskComponent} from '../components/render-kiosk/render-kiosk.component';
-import {RenderAdminComponent} from '../components/render-admin/render-admin.component';
+import {RenderAdminComponent, RenderDockComponent, RenderKioskComponent} from '../components'
 
 @Injectable()
-export class RenderResolver implements Resolve<Type<unknown>> {
-  resolve(route: ActivatedRouteSnapshot): Type<unknown> {
+export class RenderResolver implements Resolve<Type<unknown> | undefined> {
+  private readonly router = inject(Router)
+
+  resolve(route: ActivatedRouteSnapshot): Type<unknown> | undefined {
     switch (route.data['scope']) {
       case RenderType.Admin:
         return RenderAdminComponent;
       case RenderType.Kiosk:
         return RenderKioskComponent;
+      case RenderType.Dock:
+        return RenderDockComponent;
       default:
-        return RenderKioskComponent;
+        this.router.navigate(['admin']);
+        return undefined;
     }
   }
 }
