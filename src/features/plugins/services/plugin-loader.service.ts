@@ -1,18 +1,14 @@
 import {ComponentRef, Injectable, QueryList, Type, ViewContainerRef} from '@angular/core';
 import {WebsocketService} from '../../../common/services/websocket.service';
-import {CalendarPlugin, NetworkConfigPlugin, WithDockable, WithKioskable,} from '../models'
 import {RenderType} from '../../render/enums/render-type';
 import {PluginManifest, PluginVariant} from '../entities';
 import {PLUGINS} from '../utils/plugins.manifest';
+import {PossiblePlugin} from '../entities/possible-plugin';
 
 interface LoadedAngularComponentWithPluginClass {
   component: Type<unknown>;
   plugin: PossiblePlugin;
 }
-
-export type PossiblePlugin =
-  | WithKioskable<CalendarPlugin>
-  | WithDockable<WithKioskable<NetworkConfigPlugin>>
 
 
 @Injectable()
@@ -23,9 +19,7 @@ export class PluginLoaderService {
     return this._plugins;
   }
 
-  constructor(
-    private readonly webSocketService: WebsocketService
-  ) {
+  constructor(private readonly webSocketService: WebsocketService) {
     this.loadManifest();
   }
 
@@ -33,15 +27,17 @@ export class PluginLoaderService {
     for (const manifest of PLUGINS) {
       for (const v of manifest.variants) {
         if (manifest.class) {
-          const found: PossiblePlugin | undefined = this._plugins.find((p: PossiblePlugin): boolean => p instanceof manifest.class)
+          // Check if plugin instance already exists
+          const found: PossiblePlugin | undefined = this._plugins.find(
+            (p: PossiblePlugin): boolean => p instanceof manifest.class
+          );
           if (found) {
             found.addVariant(v.scope, v);
           } else {
+            // Create a new instance and add variant
             const newPlugin = new manifest.class(manifest, this.webSocketService);
             newPlugin.addVariant(v.scope, v);
-            this._plugins.push(
-              newPlugin
-            );
+            this._plugins.push(newPlugin);
           }
         } else {
           throw new Error('PossiblePlugin class not defined for ' + manifest.key);
@@ -50,11 +46,15 @@ export class PluginLoaderService {
     }
   }
 
-
-  private async getComponent(plugin: PossiblePlugin, scope: RenderType): Promise<LoadedAngularComponentWithPluginClass> {
-    const manifest: PluginManifest | undefined = PLUGINS.find((m: PluginManifest): boolean => m.key === plugin.key());
+  private async getComponent(
+    plugin: PossiblePlugin,
+    scope: RenderType
+  ): Promise<LoadedAngularComponentWithPluginClass> {
+    const manifest: PluginManifest | undefined = PLUGINS.find(
+      (m: PluginManifest): boolean => m.key === plugin.key()
+    );
     if (!manifest) {
-      throw new Error(`Plugin '${plugin.key}' non trovato`);
+      throw new Error(`Plugin '${plugin.key()}' not found`);
     }
 
     const variant: PluginVariant | undefined = manifest.variants.find(
@@ -64,7 +64,7 @@ export class PluginLoaderService {
     );
     if (!variant) {
       throw new Error(
-        `Variante per scope '${plugin.scope}' e componente '${plugin.componentName}' non trovata`
+        `Variant for scope '${plugin.scope(scope)}' and component '${plugin.componentName(scope)}' not found`
       );
     }
 
@@ -72,22 +72,25 @@ export class PluginLoaderService {
     const component: Type<unknown> = module[variant.UIComponentClassName];
     if (!component) {
       throw new Error(
-        `Componente '${variant.UIComponentClassName}' non trovato nel plugin '${plugin.key}'`
+        `Component '${variant.UIComponentClassName}' not found in plugin '${plugin.key()}'`
       );
     }
 
     return {
-      component: component,
-      plugin: plugin
+      component,
+      plugin,
     };
   }
 
-
+  /**
+   * Initializes listeners on plugins to handle configuration changes.
+   * Calls the provided callback on configuration change.
+   */
   public initializeConfigurationChangeListeners(callback: () => void | Promise<void>): void {
     this.plugins.forEach((plugin: PossiblePlugin): void => {
       plugin.configurationChangeEvent.subscribe((): void => {
         if (callback) {
-          requestAnimationFrame((): void => {
+          requestAnimationFrame(() => {
             callback();
           });
         }
@@ -95,11 +98,18 @@ export class PluginLoaderService {
     });
   }
 
-  public async render(plugins: PossiblePlugin[], containers: QueryList<ViewContainerRef>, scope: RenderType): Promise<void> {
-    for (let i: number = 0; i < plugins.length; i++) {
-      const plugin: PossiblePlugin = plugins[i];
-      const res: LoadedAngularComponentWithPluginClass = await this.getComponent(plugin, scope);
-      const container: ViewContainerRef | undefined = containers.get(i);
+  /**
+   * Renders the given plugins into the provided Angular view containers according to scope.
+   */
+  public async render(
+    plugins: PossiblePlugin[],
+    containers: QueryList<ViewContainerRef>,
+    scope: RenderType
+  ): Promise<void> {
+    for (let i = 0; i < plugins.length; i++) {
+      const plugin = plugins[i];
+      const res = await this.getComponent(plugin, scope);
+      const container = containers.get(i);
 
       if (!container) {
         console.warn(`No container found for plugin at index ${i}`);
@@ -111,6 +121,4 @@ export class PluginLoaderService {
       componentRef.setInput?.('classInput', res.plugin);
     }
   }
-
-
 }

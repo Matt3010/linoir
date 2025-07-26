@@ -1,7 +1,8 @@
 import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
-import {PluginLoaderService, PossiblePlugin} from '../../../plugins/services/plugin-loader.service';
+import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 import {NgClass} from '@angular/common';
+import {PossiblePlugin} from '../../../plugins/entities/possible-plugin';
 
 @Component({
   selector: 'lin-render-preview',
