@@ -1,11 +1,14 @@
 import {BaseMessagePayload} from "../../entities/_index";
+import {Constructor} from '../../entities/constructor';
 
-type Constructor<T = {}> = new (...args: any[]) => T;
 
-export function Kioskable<TBase extends Constructor<{
-  configuration: BaseMessagePayload;
-  sendMessage(config: any): void
-}>>(Base: TBase) {
+export function Kioskable<
+  TBase extends Constructor<
+    {
+      configuration: BaseMessagePayload;
+      sendMessage(config: any): void
+    }>
+>(Base: TBase) {
   return class extends Base {
     toggleKiosk(): void {
       const currentConfig = this.configuration;

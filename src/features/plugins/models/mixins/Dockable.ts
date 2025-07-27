@@ -1,11 +1,13 @@
 import {BaseMessagePayload} from "../../entities/_index";
+import {Constructor} from '../../entities/constructor';
 
-type Constructor<T = {}> = new (...args: any[]) => T;
-
-export function Dockable<TBase extends Constructor<{
-  configuration: BaseMessagePayload;
-  sendMessage(config: any): void;
-}>>(Base: TBase) {
+export function Dockable<
+  TBase extends Constructor<
+    {
+      configuration: BaseMessagePayload;
+      sendMessage(config: any): void;
+    }>
+>(Base: TBase) {
   return class extends Base {
     toggleDock(): void {
       const currentConfig = this.configuration;

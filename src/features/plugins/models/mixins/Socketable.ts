@@ -1,12 +1,7 @@
 import {Observable} from 'rxjs';
 import {Message, WebsocketService} from '../../../../common/services/websocket.service';
 import {BaseMessagePayload} from '../../entities/_index';
-
-/**
- * A utility type for defining a constructor with a generic type.
- * @template T - The type of the class being constructed.
- */
-type Constructor<T = {}> = new (...args: any[]) => T;
+import {Constructor} from '../../entities/constructor';
 
 /**
  * A mixin function that adds WebSocket-related functionality to a base class.
