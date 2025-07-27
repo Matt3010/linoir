@@ -1,7 +1,7 @@
 import {ComponentRef, Injectable, QueryList, Type, ViewContainerRef} from '@angular/core';
 import {WebsocketService} from '../../../common/services/websocket.service';
 import {RenderType} from '../../render/enums/render-type';
-import {PluginManifest, PluginVariant} from '../entities';
+import {PluginManifest, PluginVariant} from '../entities/_index';
 import {PLUGINS} from '../utils/plugins.manifest';
 import {PossiblePlugin} from '../entities/possible-plugin';
 

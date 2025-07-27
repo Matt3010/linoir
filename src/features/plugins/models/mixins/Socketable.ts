@@ -1,6 +1,6 @@
 import {Observable} from 'rxjs';
 import {Message, WebsocketService} from '../../../../common/services/websocket.service';
-import {BaseMessagePayload} from '../../entities';
+import {BaseMessagePayload} from '../../entities/_index';
 
 /**
  * A utility type for defining a constructor with a generic type.

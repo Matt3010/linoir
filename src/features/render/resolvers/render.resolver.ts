@@ -1,7 +1,7 @@
 import {inject, Injectable, Type} from '@angular/core';
 import {ActivatedRouteSnapshot, Resolve, Router} from '@angular/router';
 import {RenderType} from '../enums/render-type';
-import {RenderAdminComponent, RenderDockComponent, RenderKioskComponent} from '../components'
+import {RenderAdminComponent, RenderDockComponent, RenderKioskComponent} from '../components/_index'
 
 @Injectable()
 export class RenderResolver implements Resolve<Type<unknown> | undefined> {

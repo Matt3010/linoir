@@ -1,7 +1,7 @@
 import {WebsocketService} from '../../../common/services/websocket.service';
 import {Observable, Subject} from 'rxjs';
 import {RenderType} from '../../render/enums/render-type';
-import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities';
+import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities/_index';
 
 
 export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = BaseMessagePayload> {

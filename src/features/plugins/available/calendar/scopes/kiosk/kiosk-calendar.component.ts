@@ -1,6 +1,6 @@
 import {Component, input, InputSignal} from '@angular/core';
 import {CalendarPlugin} from '../../CalendarPlugin';
-import {WithKioskable} from '../../../../models';
+import {WithKioskable} from '../../../../models/_index';
 
 @Component({
   selector: 'lin-kiosk-calendar',

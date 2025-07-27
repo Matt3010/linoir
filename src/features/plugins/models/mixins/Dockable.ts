@@ -1,4 +1,4 @@
-import {BaseMessagePayload} from "../../entities";
+import {BaseMessagePayload} from "../../entities/_index";
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 

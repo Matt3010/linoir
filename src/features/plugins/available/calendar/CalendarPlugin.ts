@@ -1,5 +1,5 @@
 import {BasePlugin} from '../../models/BasePlugin';
-import {PluginManifest} from '../../entities';
+import {PluginManifest} from '../../entities/_index';
 import {WebsocketService} from '../../../../common/services/websocket.service';
 
 export class CalendarPlugin extends BasePlugin {

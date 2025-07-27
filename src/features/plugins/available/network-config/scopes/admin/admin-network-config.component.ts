@@ -1,6 +1,6 @@
 import {Component, input, InputSignal} from '@angular/core';
 import {NetworkConfigPlugin} from '../../NetworkConfigPlugin';
-import {WithDockable, WithKioskable} from '../../../../models';
+import {WithDockable, WithKioskable} from '../../../../models/_index';
 import {WithSocketable} from '../../../../models/mixins/Socketable';
 
 @Component({
