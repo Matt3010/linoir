@@ -1,6 +1,7 @@
 import {Component, input, InputSignal} from '@angular/core';
 import {CalendarPlugin} from '../../CalendarPlugin';
 import {WithKioskable} from '../../../../models/_index';
+import {WithSocketable} from '../../../../models/mixins/Socketable';
 
 @Component({
   selector: 'lin-admin-calendar',
@@ -10,6 +11,6 @@ import {WithKioskable} from '../../../../models/_index';
 })
 export class AdminCalendarComponent {
 
-  public classInput: InputSignal<WithKioskable<CalendarPlugin>> = input.required<WithKioskable<CalendarPlugin>>();
+  public classInput: InputSignal<WithKioskable<WithSocketable<CalendarPlugin>>> = input.required<WithKioskable<WithSocketable<CalendarPlugin>>>();
 
 }
