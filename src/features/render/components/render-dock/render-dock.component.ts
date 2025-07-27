@@ -22,14 +22,15 @@ import {PossiblePlugin} from '../../../plugins/entities/possible-plugin';
   `,
   styles: `
     .dock-container {
-      transition: height 0.1s ease-in-out;
+      transition: filter 0.3s ease-in-out, height 0.3s ease-in-out;
 
       &.small-height {
-        height: 0
+        height: 0;
+        filter: grayscale(0.4);
       }
 
       &.normal-height {
-        height: 70px;
+        height: 40px;
       }
     }
   `
