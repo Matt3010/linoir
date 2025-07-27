@@ -9,6 +9,7 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   private readonly _variants: Map<RenderType, PluginVariant> = new Map<RenderType, PluginVariant>();
   private readonly _configurationChangeEvent$: Subject<void> = new Subject<void>();
   public configurationChangeEvent: Observable<void> = this._configurationChangeEvent$.asObservable();
+  public readonly webSocketService: WebsocketService;
 
   public key(): string {
     return this.manifest.key;
@@ -22,10 +23,12 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
     return this._variants.get(scope)?.UIComponentClassName ?? '';
   }
 
+
   protected constructor(
     private readonly manifest: PluginManifest,
-    public readonly webSocketService: WebsocketService
+    webSocketService: WebsocketService
   ) {
+    this.webSocketService = webSocketService;
   }
 
   public addVariant(scope: RenderType, variant: PluginVariant): void {

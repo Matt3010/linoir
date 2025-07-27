@@ -1,13 +1,13 @@
 import {PluginManifest} from '../../entities';
-import {KioskableMixin} from '../../models';
+import {Kioskable} from '../../models';
 import {CalendarPlugin} from './CalendarPlugin';
 import {RenderType} from '../../../render/enums/render-type';
-import {SocketableMixin} from '../../models/mixins/SocketableMixin';
+import {Socketable} from '../../models/mixins/Socketable';
 
 export const manifest: PluginManifest[] = [
   {
     key: 'calendar',
-    class: KioskableMixin(SocketableMixin(CalendarPlugin)),
+    class: Kioskable(Socketable(CalendarPlugin)),
     variants: [
       {
         scope: RenderType.Admin,

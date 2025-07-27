@@ -1,2 +1,2 @@
-export * from './KioskableMixin'
-export * from './DockableMixin'
+export * from './Kioskable'
+export * from './Dockable'

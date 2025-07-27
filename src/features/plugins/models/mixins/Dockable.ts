@@ -2,7 +2,7 @@ import {BaseMessagePayload} from "../../entities";
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
-export function DockableMixin<TBase extends Constructor<{
+export function Dockable<TBase extends Constructor<{
   configuration: BaseMessagePayload;
   sendMessage(config: any): void;
 }>>(Base: TBase) {
@@ -18,14 +18,13 @@ export function DockableMixin<TBase extends Constructor<{
       const newConfig = {...currentConfig, dockActive: true};
       this.sendMessage(newConfig);
     }
-
   };
 }
 
-export interface Dockable {
+interface Mixin {
   toggleDock(): void;
 
   setDockActive(): void;
 }
 
-export type WithDockable<T> = T & Dockable;
+export type WithDockable<T> = T & Mixin;

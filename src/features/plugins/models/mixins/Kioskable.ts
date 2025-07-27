@@ -2,7 +2,7 @@ import {BaseMessagePayload} from "../../entities";
 
 type Constructor<T = {}> = new (...args: any[]) => T;
 
-export function KioskableMixin<TBase extends Constructor<{
+export function Kioskable<TBase extends Constructor<{
   configuration: BaseMessagePayload;
   sendMessage(config: any): void
 }>>(Base: TBase) {
@@ -21,11 +21,11 @@ export function KioskableMixin<TBase extends Constructor<{
   };
 }
 
-interface Kioskable {
+interface Mixin {
   toggleKiosk(): void;
 
   setKioskActive(): void;
 }
 
-export type WithKioskable<T> = T & Kioskable;
+export type WithKioskable<T> = T & Mixin;
 
