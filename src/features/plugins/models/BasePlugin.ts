@@ -1,4 +1,4 @@
-import {Message, WebsocketService} from '../../../common/services/websocket.service';
+import {WebsocketService} from '../../../common/services/websocket.service';
 import {Observable, Subject} from 'rxjs';
 import {RenderType} from '../../render/enums/render-type';
 import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities';
@@ -24,12 +24,8 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
 
   protected constructor(
     private readonly manifest: PluginManifest,
-    protected readonly webSocketService: WebsocketService
+    public readonly webSocketService: WebsocketService
   ) {
-    this.listenTopic().subscribe((res: Message<GenericConfig>): void => {
-      res.payload.lastUpdatedAt = new Date();
-      this.configuration = res.payload;
-    });
   }
 
   public addVariant(scope: RenderType, variant: PluginVariant): void {
@@ -46,14 +42,4 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
     return JSON.parse(storedMemoryJson) as GenericConfig;
   }
 
-  public listenTopic(): Observable<Message<GenericConfig>> {
-    return this.webSocketService.subscribe<GenericConfig>(this.key());
-  }
-
-  public sendMessage(message: GenericConfig): void {
-    this.webSocketService.send<GenericConfig>({
-      topic: this.key(),
-      payload: message
-    });
-  }
 }

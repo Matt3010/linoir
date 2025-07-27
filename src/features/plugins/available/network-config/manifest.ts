@@ -2,11 +2,12 @@ import {PluginManifest} from '../../entities';
 import {DockableMixin, KioskableMixin} from '../../models';
 import {NetworkConfigPlugin} from './NetworkConfigPlugin';
 import {RenderType} from '../../../render/enums/render-type';
+import {SocketableMixin} from '../../models/mixins/SocketableMixin';
 
 export const manifest: PluginManifest[] = [
   {
     key: 'network-config',
-    class: KioskableMixin(DockableMixin(NetworkConfigPlugin)),
+    class: KioskableMixin(DockableMixin(SocketableMixin(NetworkConfigPlugin))),
     variants: [
       {
         scope: RenderType.Admin,
