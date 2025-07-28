@@ -1,6 +1,6 @@
 services:
   frontend:
-    container_name: linoir_fe
+    container_name: frontend
     build:
       context: .
       target: nginx-builder
@@ -12,7 +12,7 @@ services:
       - app-network
 
   service:
-    container_name: service_transport
+    container_name: ws-backend
     build:
       context: .
       target: service-builder

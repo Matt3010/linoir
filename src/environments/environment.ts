@@ -4,6 +4,6 @@ import {Socketable} from '../features/plugins/models/mixins/Socketable';
 
 export const environment = {
   production: true,
-  wsServer: 'service_transport',
+  wsServer: 'ws-backend',
   fallbackAllDeactivated: Kioskable(Dockable(Socketable(NetworkConfigPlugin))),
 };
