@@ -4,7 +4,8 @@
   "scripts": {
     "create:manifest": "node register-manifest.js",
     "start:ws": "npm run create:manifest && cross-env NODE_ENV=development node service/index.js",
-    "build": "npm run create:manifest && ng build"
+    "build": " npm run create:manifest && ng build",
+    "docker:up": "docker compose up --build --force-recreate -d"
   },
   "private": false,
   "dependencies": {
