@@ -2,8 +2,8 @@ function generateManifest() {
   const fs = require('fs');
   const path = require('path');
 
-  const PLUGIN_DIR = path.join(__dirname, '..', 'src', 'features', 'plugins', 'available');
-  const OUTPUT_FILE = path.join(__dirname, '..', 'src', 'features', 'plugins', 'utils', 'plugins.manifest.ts');
+  const PLUGIN_DIR = path.join(__dirname, 'src', 'features', 'plugins', 'available');
+  const OUTPUT_FILE = path.join(__dirname, 'src', 'features', 'plugins', 'utils', 'plugins.manifest.ts');
   fs.mkdirSync(path.dirname(OUTPUT_FILE), {recursive: true});
 
   try {
@@ -46,7 +46,7 @@ function generateManifest() {
 
     const fileContent =
       `// Auto-generated file. Do not modify manually.\n` +
-      `import { PluginManifest } from '../entities';\n\n` +
+      `import {PluginManifest} from '../entities/plugin-mainfest';\n\n` +
       `${imports}\n${manifestArray}`;
 
     fs.writeFileSync(OUTPUT_FILE, fileContent);
@@ -57,4 +57,4 @@ function generateManifest() {
   }
 }
 
-module.exports = {generateManifest};
+generateManifest();

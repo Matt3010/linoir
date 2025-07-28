@@ -2,8 +2,9 @@
   "name": "linoir",
   "version": "0.0.0",
   "scripts": {
-    "start:ws": "cross-env NODE_ENV=development node service/index.js",
-    "build": "ng build"
+    "create:manifest": "node register-manifest.js",
+    "start:ws": "npm run create:manifest && cross-env NODE_ENV=development node service/index.js",
+    "build": "npm run create:manifest && ng build"
   },
   "private": false,
   "dependencies": {

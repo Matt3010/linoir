@@ -1,7 +1,6 @@
 const {getLocalIp, writeServerConfig} = require('./config');
 const {startWebSocketServer} = require('./websocket');
 const {runAngular} = require('./angular-runner');
-const {generateManifest} = require('./register-manifest');
 
 const mode = process.env.NODE_ENV || 'development';
 const WS_PORT = 3333;
@@ -16,9 +15,6 @@ const WS_PORT = 3333;
     if (mode === 'development') {
       writeServerConfig(ip);
     }
-
-    // Register plugins on startup
-    generateManifest();
 
     // Start WebSocket server
     startWebSocketServer(ip, WS_PORT);

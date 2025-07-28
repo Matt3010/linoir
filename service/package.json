@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "dependencies": {
+    "ip": "1.1.9",
     "ws": "^8.13.0"
   }
 }

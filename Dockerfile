@@ -24,6 +24,8 @@ FROM node:22 AS service-builder
 
 WORKDIR /app
 
+ENV NODE_ENV=production
+
 COPY service/package.json service/package-lock.json* ./service/
 
 WORKDIR /app/service

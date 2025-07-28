@@ -1,17 +1,23 @@
 services:
   frontend:
+    container_name: linoir_fe
     build:
       context: .
       target: nginx-builder
     ports:
       - "8080:80"
+    depends_on:
+      - service
     networks:
       - app-network
 
-  backend-ws:
+  service:
+    container_name: service_transport
     build:
       context: .
       target: service-builder
+    ports:
+      - "3333:3333"
     networks:
       - app-network
 
