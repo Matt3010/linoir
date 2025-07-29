@@ -18,6 +18,10 @@ services:
       - "3333:3333"
     networks:
       - app-network
+    environment:
+      - NODE_ENV=production
+      - TELEGRAM_API_ID=
+      - TELEGRAM_API_HASH=
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 

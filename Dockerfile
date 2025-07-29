@@ -33,4 +33,4 @@ RUN npm install
 
 COPY service ./service
 
-CMD ["node", "service/index.js"]
+CMD ["npm run start"]

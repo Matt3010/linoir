@@ -38,8 +38,9 @@ function startWebSocketServer(ip, port) {
     });
   });
 
-
   console.log(`WebSocket server running on ws://${ip}:${port}`);
+
+  return server;
 }
 
 module.exports = {startWebSocketServer};

@@ -1,11 +1,17 @@
-const {getLocalIp, writeServerConfig} = require('./config');
-const {startWebSocketServer} = require('./websocket');
-const {runAngular} = require('./angular-runner');
+const {getLocalIp, writeServerConfig} = require("./config");
+const {startWebSocketServer} = require("./websocket");
+const {runAngular} = require("./angular-runner");
+const {config} = require("dotenv");
 
-const mode = process.env.NODE_ENV || 'development';
+
+const mode = process.env.NODE_ENV || "development";
 const WS_PORT = 3333;
 
 (async () => {
+  if (mode === "development") {
+    config();
+  }
+
   try {
     const ip = mode === 'development' ? getLocalIp() : 'host.docker.internal';
     console.log(`🚀 Environment: ${mode}`);
@@ -16,10 +22,8 @@ const WS_PORT = 3333;
       writeServerConfig(ip);
     }
 
-    // Start WebSocket server
     startWebSocketServer(ip, WS_PORT);
 
-    // Start Angular only in development mode
     if (mode === 'development') {
       runAngular(mode, ip);
     }

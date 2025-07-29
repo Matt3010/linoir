@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "scripts": {
     "create:manifest": "node register-manifest.js",
-    "start:ws": "npm run create:manifest && cross-env NODE_ENV=development node service/index.js",
+    "start:ws": "npm run create:manifest && cd service && npm run start",
     "build": " npm run create:manifest && ng build",
     "docker:up": "docker compose up --build --force-recreate -d",
     "docker:build:frontend": "docker build -t matt3010/linoir-frontend:latest -f Dockerfile --target nginx-builder .",
