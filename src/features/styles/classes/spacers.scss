@@ -1,0 +1,6 @@
+$spacer: 1rem;
+$spacers: (
+  '050': $spacer * .125,
+);
+
+@import "bootstrap/scss/bootstrap";

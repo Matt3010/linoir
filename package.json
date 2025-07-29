@@ -6,10 +6,10 @@
     "start:ws": "npm run create:manifest && cross-env NODE_ENV=development node service/index.js",
     "build": " npm run create:manifest && ng build",
     "docker:up": "docker compose up --build --force-recreate -d",
-    "docker:build:frontend": "docker build -t linoir/frontend:latest -f Dockerfile .",
-    "docker:build:service": "docker build -t linoir/service:latest -f Dockerfile --target service-builder .",
-    "docker:push:frontend": "docker push linoir/frontend:latest",
-    "docker:push:service": "docker push linoir/service:latest"
+    "docker:build:frontend": "docker build -t matt3010/linoir-frontend:latest -f Dockerfile --target nginx-builder .",
+    "docker:build:service": "docker build -t matt3010/linoir-service:latest -f Dockerfile --target service-builder .",
+    "docker:push:frontend": "docker push matt3010/linoir-frontend:latest",
+    "docker:push:service": "docker push matt3010/linoir-service:latest"
   },
   "private": false,
   "dependencies": {

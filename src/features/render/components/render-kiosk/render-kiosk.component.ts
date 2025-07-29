@@ -12,10 +12,10 @@ import {PossiblePlugin} from '../../../plugins/entities/possible-plugin';
     RouterOutlet
   ],
   template: `
-    <div class="d-flex flex-wrap h-100 gap-2 p-2">
+    <div class="d-flex flex-wrap h-100 gap-1 p-1">
       @for (plugin of activePlugins; track plugin.configuration; let last = $last) {
         @if (last) {
-          <div class="d-flex flex-column gap-1 flex-grow-1">
+          <div class="d-flex flex-column gap-050 flex-grow-1">
             <div class="bg-primary flex-grow-1 rounded ps-3 py-2 pe-2">
               <ng-template #pluginContainer></ng-template>
             </div>
