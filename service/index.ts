@@ -6,7 +6,7 @@ import {runAngular} from './angular-runner';
 const mode = process.env.NODE_ENV ?? "development";
 const WS_PORT = 3333;
 
-(async () => {
+function main() {
   if (mode === "development") {
     config();
   }
@@ -31,4 +31,6 @@ const WS_PORT = 3333;
     console.error("❌ Error during startup:", err);
     process.exit(1);
   }
-})();
+}
+
+main();
