@@ -7,7 +7,7 @@ function generateManifest() {
   fs.mkdirSync(path.dirname(OUTPUT_FILE), {recursive: true});
 
   try {
-    const manifestContent = `export const manifest = [];\n`;
+    const manifestContent = `export const PLUGINS: PluginManifest[] = [];\n`;
     fs.writeFileSync(OUTPUT_FILE, manifestContent, 'utf-8');
     console.log('✅ Empty manifest file created successfully.');
   } catch (err) {
@@ -32,22 +32,37 @@ function generateManifest() {
     console.log(`Found ${manifests.length} manifest file(s):`, manifests);
 
     let imports = '';
-    let manifestArray = 'export const PLUGINS: PluginManifest[] = [\n';
+    let mergeLogic = '';
+    let pluginMapDeclaration = `const pluginMap: Record<string, PluginManifest> = {};\n\n`;
 
     manifests.forEach((file, idx) => {
       const relativePath = path.relative(path.dirname(OUTPUT_FILE), file).replace(/\.ts$/, '');
       const importPath = './' + relativePath.split(path.sep).join('/');
       const varName = `manifest${idx}`;
       imports += `import { manifest as ${varName} } from '${importPath}';\n`;
-      manifestArray += `  ...${varName},\n`;
+
+      mergeLogic += `
+for (const plugin of ${varName}) {
+  if (pluginMap[plugin.key]) {
+    pluginMap[plugin.key].variants = [
+      ...pluginMap[plugin.key].variants,
+      ...plugin.variants
+    ];
+  } else {
+    pluginMap[plugin.key] = { ...plugin, variants: [...plugin.variants] };
+  }
+}
+`;
     });
 
-    manifestArray += '];\n';
+    const manifestArray =
+      `export const PLUGINS: PluginManifest[] = Object.values(pluginMap);\n`;
 
     const fileContent =
       `// Auto-generated file. Do not modify manually.\n` +
-      `import {PluginManifest} from '../entities/plugin-mainfest';\n\n` +
-      `${imports}\n${manifestArray}`;
+      `import { PluginManifest } from '../entities';\n\n` +
+      imports +
+      `\n${pluginMapDeclaration}${mergeLogic}\n${manifestArray}`;
 
     fs.writeFileSync(OUTPUT_FILE, fileContent);
     console.log('✅ plugins.manifest.ts generated successfully.');
