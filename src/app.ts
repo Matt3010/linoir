@@ -28,6 +28,9 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
+
+    console.log(environment.TELEGRAM_API_ID)
+
     const connectToWebSocket: (ip: string) => void = (ip: string): void => {
       const wsUrl = `ws://${ip}:3333`;
       this.wsService.connect(wsUrl);

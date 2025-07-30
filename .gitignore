@@ -17,6 +17,7 @@ yarn-error.log
 .classpath
 .c9/
 *.launch
+*.js
 .settings/
 *.sublime-workspace
 
@@ -41,6 +42,6 @@ testem.log
 .DS_Store
 Thumbs.db
 
-
 service/node_modules
 service/.env
+src/environments/environment.development.ts

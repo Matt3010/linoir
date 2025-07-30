@@ -8,6 +8,9 @@ services:
       - service
     networks:
       - app-network
+    environment:
+      - TELEGRAM_API_ID=
+      - TELEGRAM_API_HASH=
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
@@ -20,8 +23,6 @@ services:
       - app-network
     environment:
       - NODE_ENV=production
-      - TELEGRAM_API_ID=
-      - TELEGRAM_API_HASH=
     labels:
       - "com.centurylinklabs.watchtower.enable=true"
 
