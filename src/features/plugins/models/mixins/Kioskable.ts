@@ -1,6 +1,4 @@
-import {BaseMessagePayload} from "../../entities/_index";
-import {Constructor} from '../../entities/constructor';
-
+import {BaseMessagePayload, Constructor} from "../../entities";
 
 export function Kioskable<
   TBase extends Constructor<

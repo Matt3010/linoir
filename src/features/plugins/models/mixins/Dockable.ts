@@ -1,5 +1,4 @@
-import {BaseMessagePayload} from "../../entities/_index";
-import {Constructor} from '../../entities/constructor';
+import {BaseMessagePayload, Constructor} from "../../entities";
 
 export function Dockable<
   TBase extends Constructor<

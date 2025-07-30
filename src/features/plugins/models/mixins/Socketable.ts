@@ -1,7 +1,6 @@
 import {Observable} from 'rxjs';
 import {Message, WebsocketService} from '../../../../common/services/websocket.service';
-import {BaseMessagePayload} from '../../entities/_index';
-import {Constructor} from '../../entities/constructor';
+import {BaseMessagePayload, Constructor} from '../../entities';
 
 /**
  * A mixin function that adds WebSocket-related functionality to a base class.

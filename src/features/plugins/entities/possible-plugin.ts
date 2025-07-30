@@ -1,7 +1,10 @@
-import {WithDockable, WithKioskable} from '../models/_index';
-import {CalendarPlugin, NetworkConfigPlugin} from '../available/_index';
-import {WithSocketable} from '../models/mixins/Socketable';
+import {TelegramPlugin, WithDockable, WithKioskable, WithSocketable} from '../models';
+import {NetworkConfigPlugin} from '../available';
+
+export type TelegramPluginWithMixins = WithKioskable<WithDockable<WithSocketable<TelegramPlugin>>>;
+export type NetworkConfigPluginWithMixins = WithKioskable<WithDockable<WithSocketable<NetworkConfigPlugin>>>;
 
 export type PossiblePlugin =
-  | WithKioskable<WithSocketable<CalendarPlugin>>
-  | WithKioskable<WithDockable<WithKioskable<NetworkConfigPlugin>>>;
+  | NetworkConfigPluginWithMixins
+  | TelegramPluginWithMixins;
+

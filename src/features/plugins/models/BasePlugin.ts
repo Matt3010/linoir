@@ -1,7 +1,7 @@
 import {WebsocketService} from '../../../common/services/websocket.service';
 import {Observable, Subject} from 'rxjs';
 import {RenderType} from '../../render/enums/render-type';
-import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities/_index';
+import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities';
 
 
 export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = BaseMessagePayload> {
@@ -22,7 +22,6 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   public UIComponentClassName(scope: RenderType): string {
     return this._variants.get(scope)?.UIComponentClassName ?? '';
   }
-
 
   protected constructor(
     private readonly manifest: PluginManifest,

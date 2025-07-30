@@ -1,8 +1,5 @@
 import {Component, input, InputSignal} from '@angular/core';
-import {WithKioskable} from '../../../../models/mixins/Kioskable';
-import {WithDockable} from '../../../../models/mixins/Dockable';
-import {WithSocketable} from '../../../../models/mixins/Socketable';
-import {NetworkConfigPlugin} from '../../NetworkConfigPlugin';
+import {NetworkConfigPluginWithMixins} from '../../../../entities';
 
 @Component({
   selector: 'lin-kiosk-network-config',
@@ -11,5 +8,5 @@ import {NetworkConfigPlugin} from '../../NetworkConfigPlugin';
   styleUrl: './kiosk-network-config.component.css'
 })
 export class KioskNetworkConfigComponent {
-  public classInput: InputSignal<WithKioskable<WithDockable<WithSocketable<NetworkConfigPlugin>>>> = input.required<WithKioskable<WithDockable<WithSocketable<NetworkConfigPlugin>>>>();
+  public classInput: InputSignal<NetworkConfigPluginWithMixins> = input.required<NetworkConfigPluginWithMixins>();
 }

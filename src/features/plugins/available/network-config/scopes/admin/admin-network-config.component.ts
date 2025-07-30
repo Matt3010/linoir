@@ -1,7 +1,5 @@
 import {Component, input, InputSignal} from '@angular/core';
-import {NetworkConfigPlugin} from '../../NetworkConfigPlugin';
-import {WithDockable, WithKioskable} from '../../../../models/_index';
-import {WithSocketable} from '../../../../models/mixins/Socketable';
+import {NetworkConfigPluginWithMixins} from '../../../../entities';
 
 @Component({
   selector: 'lin-admin-network-config',
@@ -10,6 +8,6 @@ import {WithSocketable} from '../../../../models/mixins/Socketable';
   styleUrl: './admin-network-config.component.css'
 })
 export class AdminNetworkConfigComponent {
-  public classInput: InputSignal<WithKioskable<WithDockable<WithSocketable<NetworkConfigPlugin>>>> = input.required<WithKioskable<WithDockable<WithSocketable<NetworkConfigPlugin>>>>();
+  public classInput: InputSignal<NetworkConfigPluginWithMixins> = input.required<NetworkConfigPluginWithMixins>();
 
 }

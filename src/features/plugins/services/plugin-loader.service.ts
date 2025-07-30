@@ -1,9 +1,8 @@
 import {ComponentRef, Injectable, QueryList, Type, ViewContainerRef} from '@angular/core';
 import {WebsocketService} from '../../../common/services/websocket.service';
 import {RenderType} from '../../render/enums/render-type';
-import {PluginManifest, PluginVariant} from '../entities/_index';
+import {PluginManifest, PluginVariant, PossiblePlugin} from '../entities';
 import {PLUGINS} from '../utils/plugins.manifest';
-import {PossiblePlugin} from '../entities/possible-plugin';
 
 interface LoadedAngularComponentWithPluginClass {
   component: Type<unknown>;
@@ -64,7 +63,7 @@ export class PluginLoaderService {
     );
     if (!variant) {
       throw new Error(
-        `Variant for scope '${plugin.scope(scope)}' and component '${plugin.UIComponentClassName(scope)}' not found`
+        `Variant not found ${plugin.key()} - ${scope}`
       );
     }
 
@@ -106,10 +105,15 @@ export class PluginLoaderService {
     containers: QueryList<ViewContainerRef>,
     scope: RenderType
   ): Promise<void> {
-    for (let i = 0; i < plugins.length; i++) {
-      const plugin = plugins[i];
-      const res = await this.getComponent(plugin, scope);
-      const container = containers.get(i);
+    for (let i: number = 0; i < plugins.length; i++) {
+      const plugin: PossiblePlugin = plugins[i];
+      const res: LoadedAngularComponentWithPluginClass = await this.getComponent(plugin, scope);
+
+      if (!res) {
+        return;
+      }
+
+      const container: ViewContainerRef | undefined = containers.get(i);
 
       if (!container) {
         console.warn(`No container found for plugin at index ${i}`);
