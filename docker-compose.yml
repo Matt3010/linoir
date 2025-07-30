@@ -3,7 +3,7 @@ services:
     container_name: frontend
     image: matt3010/linoir-frontend:latest
     ports:
-      - "8080:80"
+      - "9372:80"
     depends_on:
       - service
     networks:

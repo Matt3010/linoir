@@ -1,47 +1,72 @@
 import {TelegramClient} from "telegram";
 import {StringSession} from "telegram/sessions/index.js";
-import readline from "readline";
-import {NewMessage} from "telegram/events/index.js";
 
-const apiId = 25218748;
-const apiHash = "99c136a6c78083e2ed5da484b8d8dd00";
-const stringSession = new StringSession("");
-
-const rl = readline.createInterface({
-  input: process.stdin,
-  output: process.stdout,
-});
-
-(async () => {
-  console.log("Loading interactive example...");
+/**
+ * Gestisce la logica di login via QR quando riceve un messaggio dal WebSocket.
+ */
+async function handleWebSocketMessage(ws, data, apiId, apiHash, initialSession) {
+  const stringSession = new StringSession(initialSession);
   const client = new TelegramClient(stringSession, apiId, apiHash, {
     connectionRetries: 5,
   });
-  await client.start({
-    phoneNumber: async () =>
-      new Promise((resolve) =>
-        rl.question("Please enter your number: ", resolve)
-      ),
-    password: async () =>
-      new Promise((resolve) =>
-        rl.question("Please enter your password: ", resolve)
-      ),
-    phoneCode: async () =>
-      new Promise((resolve) =>
-        rl.question("Please enter the code you received: ", resolve)
-      ),
-    onError: (err) => console.log(err),
+
+  await client.connect();
+  if (!client.connected) {
+    throw new Error("Errore di connessione al client Telegram");
+  }
+
+  try {
+    const user = await client.signInUserWithQrCode(
+      {apiId, apiHash},
+      {
+        qrCode: async (code) => sendQrCode(ws, code),
+        password: async (hint) => await waitForPassword(ws, hint),
+        onError: async (err) => handleQrLoginError(ws, err),
+      }
+    );
+
+    const session = client.session.save();
+    ws.send(JSON.stringify({
+      status: "authenticated",
+      userId: user.id,
+      username: user.username,
+      session,
+    }));
+
+    console.log("✅ Login con QR completato per", user.username, session);
+  } catch (err) {
+    console.error("❌ Errore login:", err);
+    ws.send(JSON.stringify({error: err.message}));
+  }
+}
+
+function sendQrCode(ws, code) {
+  const tokenUrl = `tg://login?token=${code.token.toString("base64url")}`;
+  console.log("📱 Invia questo QR code al client:", tokenUrl);
+  ws.send(JSON.stringify({status: "qr_code", url: tokenUrl}));
+}
+
+function waitForPassword(ws, hint) {
+  console.log("📱 2fa_required", hint);
+  ws.send(JSON.stringify({status: "2fa_required", hint}));
+  return new Promise((resolve) => {
+    ws.once("message", (msg) => {
+      const data = JSON.parse(msg.toString());
+      resolve(data.password);
+    });
   });
-  console.log("You should now be connected.");
-  console.log(client.session.save());
-  await client.sendMessage("me", {message: "Hello!"});
-  rl.close();
+}
 
+function handleQrLoginError(ws, err) {
+  console.error("❌ Errore durante login QR:", err);
+  ws.send(JSON.stringify({error: err.message}));
+  return true; // interrompe il login
+}
 
-  client.addEventHandler(async (event) => {
-    const message = event.message;
-    console.log(`📩 Nuovo messaggio da ${JSON.stringify(await message.getSender())}: ${message.message}`);
-  }, new NewMessage({}));
-
-
-})();
+export async function loginWithSignInQr(wsServer, apiId, apiHash, initialSession = "") {
+  wsServer.on('connection', (ws) => {
+    ws.on('message', (data) => {
+      handleWebSocketMessage(ws, data, apiId, apiHash, initialSession);
+    });
+  });
+}
