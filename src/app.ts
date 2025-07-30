@@ -12,7 +12,9 @@ interface ServerConfig {
 @Component({
   selector: 'lin-root',
   template: `
-    <router-outlet/>
+    <div class="vw-100 vh-100">
+      <router-outlet/>
+    </div>
   `,
   imports: [
     RouterOutlet
@@ -28,9 +30,6 @@ export class App implements OnInit, OnDestroy {
   }
 
   ngOnInit(): void {
-
-    console.log(environment.TELEGRAM_API_ID)
-
     const connectToWebSocket: (ip: string) => void = (ip: string): void => {
       const wsUrl = `ws://${ip}:3333`;
       this.wsService.connect(wsUrl);
