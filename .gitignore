@@ -45,3 +45,9 @@ Thumbs.db
 service/node_modules
 service/.env
 src/environments/environment.development.ts
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.log
