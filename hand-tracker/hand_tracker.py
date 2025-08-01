@@ -5,7 +5,7 @@ import math
 
 class HandTracker:
     def __init__(self,
-                 max_num_hands=1,
+                 max_num_hands=2,
                  min_detection_confidence=0.7,
                  min_tracking_confidence=0.5,
                  swipe_threshold=80,
@@ -22,18 +22,14 @@ class HandTracker:
 
         self.SWIPE_THRESHOLD = swipe_threshold
         self.PINCH_THRESHOLD = pinch_threshold
-        self.DOUBLE_PINCH_MAX_INTERVAL = 0.5  # secondi massimo tra pinch consecutivi
 
-        self.prev_x = None
-        self.prev_time = None
-
-        self.last_pinch_time = None
-        self.pinch_count = 0
+        self.prev_positions = {}  # per mano: id -> prev_x
+        self.prev_times = {}      # per mano: id -> prev_time
 
     def get_distance(self, p1, p2):
         return math.hypot(p1[0] - p2[0], p1[1] - p2[1])
 
-    def detect_gestures(self, landmarks, img_shape):
+    def detect_gestures(self, hand_id, landmarks, img_shape):
         gesture = "none"
         h, w, _ = img_shape
 
@@ -47,53 +43,28 @@ class HandTracker:
             (thumb_tip.x, thumb_tip.y)
         )
 
+        if pinch_distance < self.PINCH_THRESHOLD:
+            gesture = "pinch"
+
         current_time = time.time()
 
-        if pinch_distance < self.PINCH_THRESHOLD:
-            # Rilevato pinch
-            if self.last_pinch_time is None:
-                # Primo pinch
-                self.last_pinch_time = current_time
-                self.pinch_count = 1
-                gesture = "pinch"
+        if hand_id in self.prev_positions and hand_id in self.prev_times:
+            prev_x = self.prev_positions[hand_id]
+            prev_time = self.prev_times[hand_id]
+
+            delta_x = ix - prev_x
+            delta_time = current_time - prev_time
+
+            if delta_time < 0.3 and abs(delta_x) > self.SWIPE_THRESHOLD:
+                gesture = "swipe left" if delta_x < 0 else "swipe right"
+                self.prev_positions.pop(hand_id)
+                self.prev_times.pop(hand_id)
             else:
-                # Verifica se entro il tempo per il double pinch
-                if (current_time - self.last_pinch_time) <= self.DOUBLE_PINCH_MAX_INTERVAL:
-                    self.pinch_count += 1
-                    self.last_pinch_time = current_time
-                    if self.pinch_count == 2:
-                        gesture = "touch"  # doppio pinch = touch
-                        self.pinch_count = 0
-                        self.last_pinch_time = None
-                    else:
-                        gesture = "pinch"
-                else:
-                    # troppo tempo passato, resetto
-                    self.pinch_count = 1
-                    self.last_pinch_time = current_time
-                    gesture = "pinch"
+                self.prev_positions[hand_id] = ix
+                self.prev_times[hand_id] = current_time
         else:
-            # Nessun pinch attuale, ma se troppo tempo passato resetto contatore
-            if self.last_pinch_time and (current_time - self.last_pinch_time) > self.DOUBLE_PINCH_MAX_INTERVAL:
-                self.pinch_count = 0
-                self.last_pinch_time = None
-
-        # Rilevamento swipe (come prima)
-        if gesture == "none":
-            if self.prev_x is not None and self.prev_time is not None:
-                delta_x = ix - self.prev_x
-                delta_time = current_time - self.prev_time
-
-                if delta_time < 0.3 and abs(delta_x) > self.SWIPE_THRESHOLD:
-                    gesture = "swipe left" if delta_x < 0 else "swipe right"
-                    self.prev_x = None
-                    self.prev_time = None
-                else:
-                    self.prev_x = ix
-                    self.prev_time = current_time
-            else:
-                self.prev_x = ix
-                self.prev_time = current_time
+            self.prev_positions[hand_id] = ix
+            self.prev_times[hand_id] = current_time
 
         return (ix, iy), gesture
 
@@ -114,22 +85,39 @@ class HandTracker:
 
             results = self.hands.process(rgb)
 
+            gestures = []
+            coords_list = []
+
             if results.multi_hand_landmarks:
-                for hand_landmarks in results.multi_hand_landmarks:
+                for i, hand_landmarks in enumerate(results.multi_hand_landmarks):
                     self.mp_drawing.draw_landmarks(image, hand_landmarks, self.mp_hands.HAND_CONNECTIONS)
 
-                    coords, gesture = self.detect_gestures(hand_landmarks.landmark, image.shape)
+                    coords, gesture = self.detect_gestures(i, hand_landmarks.landmark, image.shape)
+                    gestures.append(gesture)
+                    coords_list.append(coords)
 
                     cv2.circle(image, coords, 10, (0, 255, 0), -1)
                     cv2.putText(
                         image,
-                        f"{gesture} @ {coords}",
-                        (10, 30),
+                        f"{gesture} Hand {i}",
+                        (coords[0], coords[1] - 20),
                         cv2.FONT_HERSHEY_SIMPLEX,
-                        1,
+                        0.7,
                         (255, 0, 0),
                         2
                     )
+
+            # Riconoscimento double pinch
+            if gestures.count("pinch") == 2:
+                cv2.putText(
+                    image,
+                    "Double Pinch!",
+                    (30, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX,
+                    1.5,
+                    (0, 0, 255),
+                    3
+                )
 
             cv2.imshow('Hand Tracker', image)
 
@@ -141,7 +129,7 @@ class HandTracker:
 
 if __name__ == "__main__":
     tracker = HandTracker(
-        max_num_hands=1,
+        max_num_hands=2,
         min_detection_confidence=0.8,
         min_tracking_confidence=0.7,
         swipe_threshold=70,
