@@ -5,16 +5,16 @@ export function Kioskable<
   TBase extends Constructor<
     {
       configuration: GenericConfig;
-      setNewConfig<GenericConfig>(newProps: Partial<GenericConfig>, ignoreSelf: boolean): void;
+      setNewConfig<GenericConfig>(newProps: Partial<GenericConfig>): void;
     }>
 >(Base: TBase) {
   return class extends Base {
     toggleKiosk(): void {
-      this.setNewConfig({kioskActive: !this.configuration.kioskActive}, false);
+      this.setNewConfig({kioskActive: !this.configuration.kioskActive});
     }
 
     setKioskActive(): void {
-      this.setNewConfig({kioskActive: true}, false);
+      this.setNewConfig({kioskActive: true});
     }
   };
 }

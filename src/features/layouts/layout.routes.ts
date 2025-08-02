@@ -18,7 +18,6 @@ export const LAYOUT_ROUTES: Routes = [
         },
         data: {
           scope: RenderType.Kiosk,
-          skipRenderContainerRouter: true,
         },
         children: [
           {
@@ -43,7 +42,6 @@ export const LAYOUT_ROUTES: Routes = [
         },
         data: {
           scope: RenderType.Admin,
-          skipRenderContainerRouter: false,
         },
         children: [
           {
