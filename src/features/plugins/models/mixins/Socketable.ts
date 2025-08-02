@@ -1,7 +1,6 @@
 import {Observable} from 'rxjs';
 import {Message, WebsocketService} from '../../../../common/services/websocket.service';
 import {BaseMessagePayload, Constructor} from '../../entities';
-import {TelegramMessagePayload} from '../../available';
 
 /**
  * A mixin function that adds WebSocket-related functionality to a base class.
@@ -46,25 +45,25 @@ export function Socketable<
       return this.webSocketService.subscribeToLatestMessage<GenericConfig>(this.key());
     }
 
-    public setNewConfig(newProps: Partial<TelegramMessagePayload>): void {
+    public setNewConfig(newProps: Partial<GenericConfig>, ignoreSelf: boolean = true): void {
       const nextConfiguration = {
-        ...this.configuration,
         ...newProps
       };
       this.updateConfiguration(nextConfiguration);
-      this.updateAllClientsConfig(this.configuration);
+      this.updateAllClientsConfig(this.configuration, ignoreSelf);
     }
 
     /**
      * Sends a message to the WebSocket topic associated with the key provided by the base class.
      *
      * @param message - The message payload to send.
+     * @param ignoreSelf
      */
-    updateAllClientsConfig(message: GenericConfig): void {
+    updateAllClientsConfig(message: GenericConfig, ignoreSelf: boolean = true): void {
       this.webSocketService.send<GenericConfig>({
         topic: this.key(),
         payload: message,
-        ignoreSelf: true, // Prevents the message from being sent back to the same client
+        ignoreSelf, // Prevents the message from being sent back to the same client
       });
     }
   };
