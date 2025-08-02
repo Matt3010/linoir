@@ -45,6 +45,7 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   }
 
   public set configuration(configuration: GenericConfig) {
+    configuration.lastUpdatedAt = new Date();
     localStorage.setItem(`${this.key()}`, JSON.stringify(configuration));
     this._configurationChangeEvent$.next();
   }
@@ -70,15 +71,19 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   private initOrMergeConfiguration(): void {
     const savedConfigString: string | null = localStorage.getItem(`${this.key()}`);
     if (savedConfigString) {
-      const savedConfig: GenericConfig = JSON.parse(savedConfigString);
+      try {
+        const savedConfig: Partial<GenericConfig> = JSON.parse(savedConfigString);
 
-      this.configuration = {
-        ...savedConfig,
-        ...this.defaultConfig,
-        lastUpdatedAt: new Date(),
-      };
+        this.configuration = {
+          ...this.defaultConfig,
+          ...savedConfig,
+        };
+      } catch (e) {
+        console.warn(`Invalid config for plugin ${this.key()}, resetting to default.`, e);
+        this.resetConfiguration();
+      }
     } else {
-      this.configuration = this.defaultConfig;
+      this.resetConfiguration();
     }
   }
 

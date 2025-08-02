@@ -9,7 +9,7 @@ export function Dockable<
     }>
 >(Base: TBase) {
   return class extends Base {
-    toggleDock(): void {
+    public toggleDock(): void {
       this.setNewConfig({dockActive: !this.configuration.dockActive});
     }
   };

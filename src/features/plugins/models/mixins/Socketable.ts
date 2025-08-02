@@ -18,6 +18,8 @@ export function Socketable<
     webSocketService: WebsocketService;
     configuration: GenericConfig;
     updateConfiguration(configuration: Partial<GenericConfig>): void;
+    resetConfiguration(): void;
+    defaultConfig: GenericConfig;
   }>
 >(Base: TBase) {
   return class extends Base {
@@ -27,11 +29,10 @@ export function Socketable<
      *
      * @param args - Arguments to pass to the base class constructor.
      */
-    constructor(...args: any[]) {
+    public constructor(...args: any[]) {
       super(...args);
       this.listenTopic().subscribe((res: Message<GenericConfig>): void => {
         console.log('Received WebSocket message:', res);
-        res.payload.lastUpdatedAt = new Date();
         this.configuration = res.payload;
       });
     }
@@ -53,13 +54,17 @@ export function Socketable<
       this.updateAllClientsConfig(this.configuration, ignoreSelf);
     }
 
+    public override resetConfiguration(): void {
+      this.setNewConfig(this.defaultConfig);
+    }
+
     /**
      * Sends a message to the WebSocket topic associated with the key provided by the base class.
      *
      * @param message - The message payload to send.
      * @param ignoreSelf
      */
-    updateAllClientsConfig(message: GenericConfig, ignoreSelf: boolean = true): void {
+    public updateAllClientsConfig(message: GenericConfig, ignoreSelf: boolean = true): void {
       this.webSocketService.send<GenericConfig>({
         topic: this.key(),
         payload: message,

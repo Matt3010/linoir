@@ -9,11 +9,11 @@ export function Kioskable<
     }>
 >(Base: TBase) {
   return class extends Base {
-    toggleKiosk(): void {
+    public toggleKiosk(): void {
       this.setNewConfig({kioskActive: !this.configuration.kioskActive});
     }
 
-    setKioskActive(): void {
+    public setKioskActive(): void {
       this.setNewConfig({kioskActive: true});
     }
   };
