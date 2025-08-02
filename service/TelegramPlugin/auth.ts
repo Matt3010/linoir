@@ -1,9 +1,9 @@
-import {TelegramClient} from "telegram";
+import {Api, TelegramClient} from "telegram";
 import {StringSession} from "telegram/sessions";
 import WebSocket, {RawData, WebSocketServer} from "ws";
-import {Message} from '../websocket';
+import {Message} from "../websocket";
 
-// --- Interface Definitions ---
+// --- Interface Definitions (Invariate) ---
 
 interface TelegramLoginEventPayload {
   apiId: number;
@@ -28,14 +28,6 @@ interface TelegramQrCodeLoginErrorEventPayload {
   error: string;
 }
 
-interface TelegramQrCodeLoginErrorRequestMessage {
-  topic: "TelegramPluginLoginQrLoginError";
-  payload: {
-    error: string;
-  };
-  ignoreSelf: boolean;
-}
-
 // --- Core Function ---
 
 async function handleWebSocketMessage(
@@ -46,35 +38,27 @@ async function handleWebSocketMessage(
 ): Promise<void> {
   try {
     const stringSession = new StringSession(initialSession);
-
     const telegramClient = new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     });
 
     await telegramClient.connect();
-    console.log("🔗 Connected to Telegram API");
 
-    // Check if the user is already authorized with the provided session
+    telegramClient.addEventHandler((update) => {
+      if (update instanceof Api.UpdatesTooLong) {
+        sendLoginFailure(ws, apiId, apiHash);
+      }
+    });
+
     if (await telegramClient.isUserAuthorized()) {
       console.log("✅ User is already logged in.");
       const session = telegramClient.session.save() as unknown as string;
-      const response: Message<TelegramLoginEventPayload> = {
-        payload: {
-          apiId,
-          apiHash,
-          stringSession: session,
-          isLogged: true,
-        },
-        ignoreSelf: false,
-        topic: "TelegramLoginEventPayload",
-      };
-      ws.send(JSON.stringify(response));
-      // Return early as the user is already logged in. The 'finally' block will still execute.
+      sendLoginSuccess(ws, apiId, apiHash, session);
       return;
     }
 
-    // If not logged in, proceed with the QR code sign-in process
-    console.log("👤 User not logged in. Starting QR code login...");
+    sendLoginFailure(ws, apiId, apiHash);
+
     const user = await telegramClient.signInUserWithQrCode(
       {apiId, apiHash},
       {
@@ -83,74 +67,66 @@ async function handleWebSocketMessage(
         onError: (err) => handleQrLoginError(ws, err),
       }
     );
-    console.log("🔑 User signed in with QR code:", user);
 
     if (!user || ("className" in user && user.className === "UserEmpty")) {
-      const errorResponse: TelegramQrCodeLoginErrorRequestMessage = {
-        payload: {
-          error: "Login failed. User not found or empty session.",
-        },
-        ignoreSelf: false,
-        topic: "TelegramPluginLoginQrLoginError",
-      };
-      ws.send(JSON.stringify(errorResponse));
+      sendError(ws, "Login failed. User not found or empty session.");
       return;
     }
 
     const session = telegramClient.session.save() as unknown as string;
-    const response: Message<TelegramLoginEventPayload> = {
-      payload: {
-        apiId,
-        apiHash,
-        stringSession: session,
-        isLogged: true,
-      },
-      ignoreSelf: false,
-      topic: "TelegramLoginEventPayload",
-    };
-    ws.send(JSON.stringify(response));
+    sendLoginSuccess(ws, apiId, apiHash, session);
 
   } catch (err: any) {
-    console.log("❌ Error during Telegram login:", err.message);
-    const errorResponse: TelegramQrCodeLoginErrorRequestMessage = {
-      payload: {
-        error: err.message,
-      },
-      ignoreSelf: false,
-      topic: "TelegramPluginLoginQrLoginError",
-    };
-    ws.send(JSON.stringify(errorResponse));
-
+    sendError(ws, err.message);
   }
 }
 
-// --- Helper Functions ---
+
+function sendMessage<T>(ws: WebSocket, topic: string, payload: T): void {
+  const message: Message<T> = {
+    topic,
+    payload,
+    ignoreSelf: false,
+  };
+  ws.send(JSON.stringify(message));
+}
+
+function sendLoginSuccess(ws: WebSocket, apiId: number, apiHash: string, session: string): void {
+  sendMessage<TelegramLoginEventPayload>(ws, "TelegramLoginEventPayload", {
+    apiId,
+    apiHash,
+    stringSession: session,
+    isLogged: true,
+  });
+}
+
+
+function sendLoginFailure(ws: WebSocket, apiId: number, apiHash: string): void {
+  sendMessage<TelegramLoginEventPayload>(ws, "TelegramLoginEventPayload", {
+    apiId,
+    apiHash,
+    stringSession: '',
+    isLogged: false,
+  });
+}
+
+function sendError(ws: WebSocket, error: string): void {
+  sendMessage<TelegramQrCodeLoginErrorEventPayload>(ws, "TelegramPluginLoginQrLoginError", {error});
+}
 
 function sendQrCode(ws: WebSocket, code: { token: Buffer }): Promise<void> {
-  return new Promise((resolve) => {
-    const tokenUrl = `tg://login?token=${code.token.toString("base64url")}`;
-    const message: Message<TelegramQrCodeTokenEventPayload> = {
-      payload: {
-        qrCodeToken: tokenUrl,
-      },
-      ignoreSelf: false,
-      topic: "TelegramPluginLoginQrCodeTokenUpdate",
-    };
-    ws.send(JSON.stringify(message));
-    resolve();
-  })
+  const tokenUrl = `tg://login?token=${code.token.toString("base64url")}`;
+  sendMessage<TelegramQrCodeTokenEventPayload>(ws, "TelegramPluginLoginQrCodeTokenUpdate", {
+    qrCodeToken: tokenUrl,
+  });
+  return Promise.resolve();
 }
 
 function waitForPassword(ws: WebSocket, hint?: string): Promise<string> {
   console.log("📱 2FA required", hint);
-  const message: Message<TelegramQrCode2FAEventRequestPayload> = {
-    payload: {
-      hint: hint ?? null,
-    },
-    ignoreSelf: false,
-    topic: "TelegramPluginLogin2FARequest",
-  };
-  ws.send(JSON.stringify(message));
+  sendMessage<TelegramQrCode2FAEventRequestPayload>(ws, "TelegramPluginLogin2FARequest", {
+    hint: hint ?? null,
+  });
 
   return new Promise((resolve, reject) => {
     const listener = (msg: WebSocket.RawData) => {
@@ -162,32 +138,23 @@ function waitForPassword(ws: WebSocket, hint?: string): Promise<string> {
           resolve(response.payload.password);
         }
       } catch {
-        // Ignora messaggi non validi
       }
     };
     ws.on("message", listener);
     setTimeout(() => {
+      ws.removeListener("message", listener);
       reject(new Error("Timeout: Did not receive the 2FA password within 60 seconds."));
     }, 60000);
   });
 }
 
-function handleQrLoginError(ws: WebSocket, err: Error): void | Promise<boolean> {
-  return new Promise((resolve) => {
-    const errorMessage: TelegramQrCodeLoginErrorRequestMessage = {
-      payload: {error: err.message},
-      topic: "TelegramPluginLoginQrLoginError",
-      ignoreSelf: false,
-    };
-    ws.send(JSON.stringify(errorMessage));
-    resolve(true);
-  });
+function handleQrLoginError(ws: WebSocket, err: Error): Promise<boolean> {
+  sendError(ws, err.message);
+  return Promise.resolve(true);
 }
 
-// --- Entrypoint ---
-
 export async function loginWithSignInQr(
-  wsServer: WebSocketServer,
+  wsServer: WebSocketServer
 ): Promise<void> {
   wsServer.on("connection", (ws: WebSocket) => {
     ws.on("message", async (data: RawData) => {

@@ -1,4 +1,4 @@
-import WebSocket, {RawData} from 'ws';
+import WebSocket, {Data} from 'ws';
 import {IncomingMessage} from 'node:http';
 
 let _usersConnected: number = 0;
@@ -67,7 +67,7 @@ export function startWebSocketServer(ip: string, port: number): WSType {
     console.log('Total users connected:', _usersConnected);
 
     // Use the dedicated handler for the 'message' event.
-    ws.on('message', (data: RawData) => {
+    ws.on('message', (data: Data) => {
       handleMessage(server, ws, data.toString());
     });
 

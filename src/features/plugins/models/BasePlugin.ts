@@ -50,6 +50,18 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
     this._configurationChangeEvent$.next();
   }
 
+
+  public resetConfiguration(): void {
+    this.configuration = this.defaultConfig;
+  }
+
+  // Automatically trigger re-rendering when configuration changes
+  public get configuration(): GenericConfig {
+    const storedMemoryJson: string = localStorage.getItem(`${this.key()}`)!;
+    return JSON.parse(storedMemoryJson) as GenericConfig;
+  }
+
+  // UI won't update automatically with this method, so we should need to manually trigger the re-rendering
   public updateConfiguration(configuration: Partial<GenericConfig>): void {
     const nextConfiguration = {
       ...this.configuration,
@@ -57,15 +69,6 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
       lastUpdatedAt: new Date(),
     };
     localStorage.setItem(`${this.key()}`, JSON.stringify(nextConfiguration));
-  }
-
-  public resetConfiguration(): void {
-    this.configuration = this.defaultConfig;
-  }
-
-  public get configuration(): GenericConfig {
-    const storedMemoryJson: string = localStorage.getItem(`${this.key()}`)!;
-    return JSON.parse(storedMemoryJson) as GenericConfig;
   }
 
   private initOrMergeConfiguration(): void {
