@@ -1,0 +1,20 @@
+@let qrCodeToken = (qrCode | async);
+
+@if (qrCodeToken) {
+  <qrcode
+    [qrdata]="qrCodeToken.payload.qrCodeToken"
+    [allowEmptyString]="true"
+    [cssClass]="'center'"
+    [colorDark]="'#000000ff'"
+    [colorLight]="'#ffffffff'"
+    [elementType]="'canvas'"
+    [errorCorrectionLevel]="'L'"
+    [imageHeight]="40"
+    [imageWidth]="40"
+    [margin]="4"
+    [scale]="1"
+    [title]="'A custom title attribute'"
+    [width]="200"
+  ></qrcode>
+
+}

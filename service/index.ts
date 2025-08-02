@@ -1,7 +1,8 @@
 import {config} from 'dotenv';
 import {getLocalIp, writeServerConfig} from './config';
-import {startWebSocketServer} from './websocket';
+import {startWebSocketServer, WSType} from './websocket';
 import {runAngular} from './angular-runner';
+import {loginWithSignInQr} from './TelegramPlugin/auth';
 
 const mode = process.env.NODE_ENV ?? "development";
 const WS_PORT = 3333;
@@ -21,7 +22,11 @@ function main() {
       writeServerConfig(ip);
     }
 
-    startWebSocketServer(ip, WS_PORT);
+    const WsServer: WSType = startWebSocketServer(ip, WS_PORT);
+    loginWithSignInQr(WsServer).then(() => {
+      console.log("Telegram login initiated successfully.");
+    });
+
 
     if (mode === "development") {
       runAngular(ip);

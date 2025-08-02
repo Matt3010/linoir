@@ -4,7 +4,7 @@ import {BehaviorSubject, map, mergeAll, Observable} from 'rxjs';
 export interface Message<AnyPayload = unknown> {
   topic: string;
   payload: AnyPayload;
-  ignoreSelf: boolean; // Optional flag to ignore self in message handling
+  ignoreSelf: boolean; // Optional flag to ignore self in message handling,
 }
 
 @Injectable()

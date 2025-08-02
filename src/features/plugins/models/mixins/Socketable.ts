@@ -67,7 +67,7 @@ export function Socketable<
       this.webSocketService.send<GenericConfig>({
         topic: this.key(),
         payload: message,
-        ignoreSelf, // Prevents the message from being sent back to the same client
+        ignoreSelf, // Prevents the message from being sent back to the same client,
       });
     }
   };

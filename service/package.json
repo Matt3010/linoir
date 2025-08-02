@@ -4,12 +4,13 @@
   "main": "index.ts",
   "scripts": {
     "build": "tsc",
-    "start": "npm run build && tsc && node index.js"
+    "start": "npm run build --watch && tsc && node index.js"
   },
   "dependencies": {
     "dotenv": "^17.2.1",
     "ip": "1.1.9",
-    "ws": "^8.13.0"
+    "ws": "^8.13.0",
+    "telegram": "^2.26.22"
   },
   "devDependencies": {
     "@types/node": "^24.1.0",

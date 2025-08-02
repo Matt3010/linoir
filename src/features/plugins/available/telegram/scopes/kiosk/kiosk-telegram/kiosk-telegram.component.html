@@ -3,3 +3,12 @@
   <img [src]="classInput().configuration.iconUrl" width="20px" height="20px"
        alt="Kiosk Telegram"/>
 </div>
+
+
+@if (!classInput().configuration.isLogged) {
+  <div class="position-absolute top-50 start-50 translate-middle">
+    <lin-auth [classInput]="classInput()"></lin-auth>
+  </div>
+} @else {
+  logged
+}

@@ -1,64 +1,79 @@
 import WebSocket, {RawData} from 'ws';
 import {IncomingMessage} from 'node:http';
 
-let usersConnected = 0;
+let _usersConnected: number = 0;
+export const usersConnected = _usersConnected;
 
+// Define a type for the WebSocket server instance for better type safety.
 export type WSType = WebSocket.Server<typeof WebSocket.WebSocket, typeof IncomingMessage>;
 
+// Interface for a structured message, although not strictly enforced in the handler.
+export interface Message<AnyPayload = any> {
+  topic: string;
+  payload: AnyPayload;
+  ignoreSelf: boolean;
+}
+
+/**
+ * Handles incoming WebSocket messages, parsing them and broadcasting to clients.
+ * @param server - The WebSocket server instance.
+ * @param ws - The specific WebSocket connection that received the message.
+ *- @param data - The raw message data.
+ * @param data
+ */
+function handleMessage(server: WSType, ws: WebSocket, data: string): void {
+  let ignoreSelf = false;
+
+  console.log('Received text from client:', data);
+
+  // Prova a fare il parse del JSON per controllare i flag.
+  try {
+    const parsed: any = JSON.parse(data);
+    if (parsed.ignoreSelf) {
+      ignoreSelf = true;
+    }
+  } catch {
+    // Se il messaggio non è JSON valido, procedi comunque.
+  }
+
+  // Broadcast the message to all connected clients.
+  server.clients.forEach(client => {
+    if (client.readyState === WebSocket.OPEN) {
+      if (ignoreSelf) {
+        if (client !== ws) {
+          console.log('Sending to all clients except self');
+          client.send(data);
+        }
+      } else {
+        console.log('Sending to all clients');
+        client.send(data);
+      }
+    }
+  });
+}
+
+/**
+ * Starts and configures the WebSocket server.
+ * @param ip - The IP address to bind the server to.
+ * @param port - The port number for the server.
+ * @returns The created WebSocket server instance.
+ */
 export function startWebSocketServer(ip: string, port: number): WSType {
-  usersConnected = 0;
+  _usersConnected = 0;
   const server = new WebSocket.Server({port, host: '0.0.0.0'});
 
-  server.on('connection', (ws, req) => {
-    const clientIp = req.socket.remoteAddress;
-    console.log('New client connected:', clientIp);
-    usersConnected++;
-    console.log(usersConnected)
+  server.on('connection', (ws) => {
+    _usersConnected++;
+    console.log('Total users connected:', _usersConnected);
 
-    ws.on('message', (data: RawData, isBinary: boolean) => {
-      let ignoreSelf: boolean = false;
-
-      if (isBinary) {
-        console.log('Received binary data from client, length:', data);
-      } else {
-        let message: string;
-        if (Buffer.isBuffer(data)) {
-          message = data.toString('utf-8');
-        } else if (data instanceof ArrayBuffer) {
-          message = Buffer.from(data).toString('utf-8');
-        } else if (Array.isArray(data)) { // Buffer[]
-          message = Buffer.concat(data).toString('utf-8');
-        } else {
-          message = String(data);
-        }
-        console.log('Received text from client:', message);
-        try {
-          const parsed: any = JSON.parse(message);
-          if (parsed.ignoreSelf) {
-            ignoreSelf = true;
-          }
-        } catch {
-          // not a json message, ignore
-        }
-      }
-
-      server.clients.forEach(client => {
-        if (client.readyState === WebSocket.OPEN) {
-          if (ignoreSelf) {
-            if (client !== ws) {
-              client.send(data, {binary: isBinary});
-            }
-          } else {
-            client.send(data, {binary: isBinary});
-          }
-        }
-      });
+    // Use the dedicated handler for the 'message' event.
+    ws.on('message', (data: RawData) => {
+      handleMessage(server, ws, data.toString());
     });
 
     ws.on('close', (): void => {
-      usersConnected--;
-      console.log('Client disconnected:', clientIp);
-      console.log(usersConnected)
+      _usersConnected--;
+      console.log('Total users connected:', _usersConnected);
     });
 
     ws.on('error', (err: Error): void => {

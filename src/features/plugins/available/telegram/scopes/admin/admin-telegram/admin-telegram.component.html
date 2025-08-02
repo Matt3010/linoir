@@ -15,3 +15,23 @@
 />
 
 <button (click)="classInput().resetConfiguration()">Reset conf</button>
+
+
+<div class="row m-0">
+  <input
+    class="col-6"
+    type="text"
+    name="active"
+    id="active"
+    [ngModel]="classInput().configuration.apiId"
+    (ngModelChange)="classInput().setNewConfig({ api_id: $event })"
+  />
+  <input
+    class="col-6"
+    type="text"
+    name="active"
+    id="active"
+    [ngModel]="classInput().configuration.apiHash"
+    (ngModelChange)="classInput().setNewConfig({ api_hash: $event })"
+  />
+</div>
