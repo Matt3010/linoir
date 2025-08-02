@@ -32,7 +32,6 @@ export function Socketable<
     public constructor(...args: any[]) {
       super(...args);
       this.listenTopic().subscribe((res: Message<GenericConfig>): void => {
-        console.log('Received WebSocket message:', res);
         this.configuration = res.payload;
       });
     }
