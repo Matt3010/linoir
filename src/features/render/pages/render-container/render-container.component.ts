@@ -22,9 +22,9 @@ gsap.registerPlugin(Draggable);
     <ng-container #container></ng-container>
   `,
   styles: `
-    .inertia-element {
-      filter: grayscale(1) brightness(2.5);
-    }
+    /*.inertia-element {*/
+    /*  filter: grayscale(1) brightness(2.5);*/
+    /*}*/
   `
 })
 export class RenderContainerComponent implements OnInit, AfterViewInit {

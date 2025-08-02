@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, Vi
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 import {NgClass} from '@angular/common';
-import {PossiblePlugin} from '../../../plugins/entities/possible-plugin';
+import {PossiblePlugin} from '../../../plugins/entities';
 
 @Component({
   selector: 'lin-render-preview',
@@ -14,7 +14,7 @@ import {PossiblePlugin} from '../../../plugins/entities/possible-plugin';
     <div [ngClass]="{
       'small-height': activePlugins.length === 0,
       'normal-height': activePlugins.length > 0
-    }" class="ps-3 py-2 pe-2 dock-container rounded bg-primary">
+    }" class="ps-3 py-2 pe-2 dock-container rounded-4 bg-primary">
       @for (plugin of activePlugins; track plugin.configuration) {
         <ng-template #pluginContainer></ng-template>
       }

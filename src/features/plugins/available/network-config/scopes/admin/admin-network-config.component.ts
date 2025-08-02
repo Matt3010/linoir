@@ -8,6 +8,6 @@ import {NetworkConfigPluginWithMixins} from '../../../../entities';
   styleUrl: './admin-network-config.component.css'
 })
 export class AdminNetworkConfigComponent {
-  public classInput: InputSignal<NetworkConfigPluginWithMixins> = input.required<NetworkConfigPluginWithMixins>();
+  public classInput: InputSignal<InstanceType<typeof NetworkConfigPluginWithMixins>> = input.required<InstanceType<typeof NetworkConfigPluginWithMixins>>();
 
 }

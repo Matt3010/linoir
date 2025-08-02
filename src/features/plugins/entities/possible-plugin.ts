@@ -1,10 +1,9 @@
-import {TelegramPlugin, WithDockable, WithKioskable, WithSocketable} from '../models';
-import {NetworkConfigPlugin} from '../available';
+import {NetworkConfigPlugin, TelegramPlugin} from '../available';
+import {Dockable, Kioskable, Socketable} from '../models';
 
-export type TelegramPluginWithMixins = WithKioskable<WithDockable<WithSocketable<TelegramPlugin>>>;
-export type NetworkConfigPluginWithMixins = WithKioskable<WithDockable<WithSocketable<NetworkConfigPlugin>>>;
+export const TelegramPluginWithMixins = Kioskable(Dockable(Socketable(TelegramPlugin)));
+export const NetworkConfigPluginWithMixins = Kioskable(Dockable(Socketable(NetworkConfigPlugin)));
 
 export type PossiblePlugin =
-  | NetworkConfigPluginWithMixins
-  | TelegramPluginWithMixins;
-
+  | InstanceType<typeof NetworkConfigPluginWithMixins>
+  | InstanceType<typeof TelegramPluginWithMixins>;

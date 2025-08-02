@@ -4,6 +4,7 @@ import {BehaviorSubject, map, mergeAll, Observable} from 'rxjs';
 export interface Message<AnyPayload = unknown> {
   topic: string;
   payload: AnyPayload;
+  ignoreSelf: boolean; // Optional flag to ignore self in message handling
 }
 
 @Injectable()
@@ -53,7 +54,7 @@ export class WebsocketService {
     }
   }
 
-  public subscribe<T>(topic: string): Observable<Message<T>> {
+  public subscribeToLatestMessage<T>(topic: string): Observable<Message<T>> {
     return this.messages$.pipe(
       map((messages: Message[]): Message<T>[] =>
         messages.filter((msg: Message, index: number): msg is Message<T> => (msg.topic === topic || msg.topic === '*') && index === messages.length - 1)

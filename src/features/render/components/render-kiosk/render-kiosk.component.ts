@@ -3,7 +3,7 @@ import {PluginLoaderService} from '../../../plugins/services/plugin-loader.servi
 import {RenderType} from '../../enums/render-type';
 import {RouterOutlet} from '@angular/router';
 import {environment} from '../../../../environments/environment';
-import {PossiblePlugin} from '../../../plugins/entities/possible-plugin';
+import {PossiblePlugin} from '../../../plugins/entities';
 
 @Component({
   selector: 'lin-render-preview',
@@ -16,13 +16,13 @@ import {PossiblePlugin} from '../../../plugins/entities/possible-plugin';
       @for (plugin of activePlugins; track plugin.configuration; let last = $last) {
         @if (last) {
           <div class="d-flex flex-column gap-050 flex-grow-1">
-            <div class="bg-primary flex-grow-1 rounded ps-3 py-2 pe-2">
+            <div class="bg-primary position-relative flex-grow-1 rounded-4 overflow-hidden">
               <ng-template #pluginContainer></ng-template>
             </div>
             <router-outlet></router-outlet>
           </div>
         } @else {
-          <div class="flex-grow-1 bg-primary rounded ps-3 py-2 pe-2">
+          <div class="flex-grow-1 position-relative bg-primary rounded-4 overflow-hidden">
             <ng-template #pluginContainer></ng-template>
           </div>
         }

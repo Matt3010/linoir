@@ -4,20 +4,20 @@ export function Dockable<
   TBase extends Constructor<
     {
       configuration: BaseMessagePayload;
-      sendMessage(config: any): void;
+      updateAllClientsConfig(config: any): void;
     }>
 >(Base: TBase) {
   return class extends Base {
     toggleDock(): void {
       const currentConfig = this.configuration;
       const newConfig = {...currentConfig, dockActive: !currentConfig.dockActive};
-      this.sendMessage(newConfig);
+      this.updateAllClientsConfig(newConfig);
     }
 
     setDockActive(): void {
       const currentConfig = this.configuration;
       const newConfig = {...currentConfig, dockActive: true};
-      this.sendMessage(newConfig);
+      this.updateAllClientsConfig(newConfig);
     }
   };
 }

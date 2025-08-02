@@ -1,7 +1,19 @@
 <p>TELEGRAM</p>
 <p>Toggle kiosk</p>
-<input type="checkbox" name="active" id="active" [checked]="classInput().configuration.kioskActive"
+<input type="checkbox" name="active" id="kioskActive" [checked]="classInput().configuration.kioskActive"
        (click)="classInput().toggleKiosk()" (keydown)="classInput().toggleKiosk()">
 <p>Toggle dock</p>
-<input type="checkbox" name="active" id="active" [checked]="classInput().configuration.dockActive"
+<input type="checkbox" name="active" id="dockActive" [checked]="classInput().configuration.dockActive"
        (click)="classInput().toggleDock()" (keydown)="classInput().toggleKiosk()">
+<p>BG-color</p>
+
+<input
+  type="color"
+  name="active"
+  id="active"
+  [ngModel]="classInput().configuration.backgroundColor"
+  (ngModelChange)="classInput().setNewConfig({ backgroundColor: $event })"
+/>
+
+
+<button (click)="classInput().resetConfiguration()">Reset conf</button>

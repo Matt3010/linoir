@@ -8,6 +8,6 @@ import {TelegramPluginWithMixins} from '../../../../../entities';
   styleUrl: './dock-telegram.component.css'
 })
 export class DockTelegramComponent {
-  public classInput: InputSignal<TelegramPluginWithMixins> = input.required<TelegramPluginWithMixins>();
+  public classInput: InputSignal<InstanceType<typeof TelegramPluginWithMixins>> = input.required<InstanceType<typeof TelegramPluginWithMixins>>();
 
 }

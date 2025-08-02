@@ -1,28 +1,23 @@
 import {BasePlugin} from '../../models/BasePlugin';
-import {BaseMessagePayload} from '../../entities/base-message-payload';
-import {PluginManifest} from '../../entities/plugin-mainfest';
+import {BaseMessagePayload, PluginManifest} from '../../entities';
 import {WebsocketService} from '../../../../common/services/websocket.service';
 
-
-interface NetworkMessagePayload extends BaseMessagePayload {
-  local_ip: string;
+export interface NetworkMessagePayload extends BaseMessagePayload {
 }
 
 export class NetworkConfigPlugin extends BasePlugin<NetworkMessagePayload> {
+  public override defaultConfig: NetworkMessagePayload = {
+    kioskActive: true,
+    lastUpdatedAt: new Date(),
+    dockActive: false,
+  };
 
   constructor(
     manifest: PluginManifest,
     webSocketService: WebsocketService
   ) {
     super(manifest, webSocketService);
-    if (!localStorage.getItem(`${this.key()}`)) {
-      this.configuration = {
-        kioskActive: true,
-        local_ip: 'ciao',
-        lastUpdatedAt: new Date(),
-        dockActive: false
-      }
-    }
   }
+
 
 }

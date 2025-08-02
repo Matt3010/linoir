@@ -8,5 +8,5 @@ import {NetworkConfigPluginWithMixins} from '../../../../entities';
   styleUrl: './dock-network-config.component.css'
 })
 export class DockNetworkConfigComponent {
-  public classInput: InputSignal<NetworkConfigPluginWithMixins> = input.required<NetworkConfigPluginWithMixins>();
+  public classInput: InputSignal<InstanceType<typeof NetworkConfigPluginWithMixins>> = input.required<InstanceType<typeof NetworkConfigPluginWithMixins>>();
 }

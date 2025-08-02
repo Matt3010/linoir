@@ -8,8 +8,14 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
 
   private readonly _variants: Map<RenderType, PluginVariant> = new Map<RenderType, PluginVariant>();
   private readonly _configurationChangeEvent$: Subject<void> = new Subject<void>();
-  public configurationChangeEvent: Observable<void> = this._configurationChangeEvent$.asObservable();
+  public readonly configurationChangeEvent: Observable<void> = this._configurationChangeEvent$.asObservable();
   public readonly webSocketService: WebsocketService;
+  public readonly defaultConfig: GenericConfig = {
+    kioskActive: true,
+    lastUpdatedAt: new Date(),
+    dockActive: false,
+  } as GenericConfig;
+
 
   public key(): string {
     return this.manifest.key;
@@ -27,6 +33,10 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
     private readonly manifest: PluginManifest,
     webSocketService: WebsocketService
   ) {
+    // setTimeout is used to ensure that the configuration is initialized after the component is created
+    setTimeout((): void => {
+      this.initOrMergeConfiguration();
+    });
     this.webSocketService = webSocketService;
   }
 
@@ -39,9 +49,37 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
     this._configurationChangeEvent$.next();
   }
 
+  public updateConfiguration(configuration: Partial<GenericConfig>): void {
+    const nextConfiguration = {
+      ...this.configuration,
+      ...configuration,
+      lastUpdatedAt: new Date(),
+    };
+    localStorage.setItem(`${this.key()}`, JSON.stringify(nextConfiguration));
+  }
+
+  public resetConfiguration(): void {
+    this.configuration = this.defaultConfig;
+  }
+
   public get configuration(): GenericConfig {
     const storedMemoryJson: string = localStorage.getItem(`${this.key()}`)!;
     return JSON.parse(storedMemoryJson) as GenericConfig;
+  }
+
+  private initOrMergeConfiguration(): void {
+    const savedConfigString: string | null = localStorage.getItem(`${this.key()}`);
+    if (savedConfigString) {
+      const savedConfig: GenericConfig = JSON.parse(savedConfigString);
+
+      this.configuration = {
+        ...savedConfig,
+        ...this.defaultConfig,
+        lastUpdatedAt: new Date(),
+      };
+    } else {
+      this.configuration = this.defaultConfig;
+    }
   }
 
 }
