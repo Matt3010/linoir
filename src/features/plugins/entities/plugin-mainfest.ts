@@ -1,9 +1,9 @@
 import {PluginVariant} from './plugin-variant';
 import {Type} from '@angular/core';
-import {PossiblePlugin} from './possible-plugin';
+import {PossiblePlugins} from './possible-plugins';
 
 export interface PluginManifest {
   key: string;
-  class: Type<PossiblePlugin>;
+  class: Type<PossiblePlugins>;
   variants: PluginVariant[];
 }

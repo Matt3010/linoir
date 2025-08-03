@@ -1,9 +1,9 @@
 import {ChangeDetectionStrategy, Component, input, InputSignal} from '@angular/core';
-import {TelegramPluginWithMixins} from '../../../../../../../entities';
 import {Message, WebsocketService} from '../../../../../../../../../common/services/websocket.service';
 import {QRCodeComponent} from 'angularx-qrcode';
 import {Observable} from 'rxjs';
 import {AsyncPipe} from '@angular/common';
+import {MixedTelegramPlugin} from '../../../../../../../entities';
 
 export interface TelegramLoginEventPayload {
   apiId: number;
@@ -40,7 +40,7 @@ interface TelegramQrCodeLoginErrorEventPayload {
 })
 export class AuthComponent {
 
-  public classInput: InputSignal<InstanceType<typeof TelegramPluginWithMixins>> = input.required<InstanceType<typeof TelegramPluginWithMixins>>();
+  public classInput: InputSignal<MixedTelegramPlugin> = input.required<MixedTelegramPlugin>();
 
   public constructor(
     private readonly webSockerService: WebsocketService,

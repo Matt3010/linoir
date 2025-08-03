@@ -2,7 +2,7 @@ import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, Vi
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 import {NgClass} from '@angular/common';
-import {PossiblePlugin} from '../../../plugins/entities';
+import {PossiblePlugins} from '../../../plugins/entities';
 
 @Component({
   selector: 'lin-render-preview',
@@ -38,7 +38,7 @@ import {PossiblePlugin} from '../../../plugins/entities';
 export class RenderDockComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;
-  public activePlugins: PossiblePlugin[] = [];
+  public activePlugins: PossiblePlugins[] = [];
 
   private readonly renderType: RenderType = RenderType.Dock;
 
@@ -49,7 +49,7 @@ export class RenderDockComponent implements AfterViewInit {
   }
 
   private filterAndRender(): void {
-    this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugin): boolean => p.configuration.dockActive);
+    this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugins): boolean => p.configuration.dockActive);
     this.cdr.detectChanges();
     this.pluginLoader.render(this.activePlugins, this.containers, this.renderType).catch(console.error);
   }

@@ -22,13 +22,8 @@ export function Socketable<
     defaultConfig: GenericConfig;
   }>
 >(Base: TBase) {
-  return class extends Base {
-    /**
-     * Extends the base class constructor to set up a WebSocket subscription.
-     * Updates the configuration whenever a new message is received.
-     *
-     * @param args - Arguments to pass to the base class constructor.
-     */
+  return class extends Base implements SocketableInterface<GenericConfig> {
+
     public constructor(...args: any[]) {
       super(...args);
       this.listenTopic().subscribe((res: Message<GenericConfig>): void => {
@@ -36,34 +31,21 @@ export function Socketable<
       });
     }
 
-    /**
-     * Subscribes to a WebSocket topic using the key provided by the base class.
-     *
-     * @returns An observable that emits messages from the WebSocket topic.
-     */
     public listenTopic(): Observable<Message<GenericConfig>> {
       return this.webSocketService.subscribeToLatestMessage<GenericConfig>(this.key());
     }
 
-    public setNewConfig(newProps: Partial<GenericConfig>, ignoreSelf: boolean = true): void {
+    public override updateConfiguration(configuration: Partial<GenericConfig>, ignoreSelf: boolean = false): void {
       const nextConfiguration = {
-        ...newProps
+        ...this.configuration,
+        ...configuration,
+        lastUpdatedAt: new Date(),
       };
-      this.updateConfiguration(nextConfiguration);
+      localStorage.setItem(`${this.key()}`, JSON.stringify(nextConfiguration));
       this.updateAllClientsConfig(this.configuration, ignoreSelf);
     }
 
-    public override resetConfiguration(): void {
-      this.setNewConfig(this.defaultConfig);
-    }
-
-    /**
-     * Sends a message to the WebSocket topic associated with the key provided by the base class.
-     *
-     * @param message - The message payload to send.
-     * @param ignoreSelf
-     */
-    public updateAllClientsConfig(message: GenericConfig, ignoreSelf: boolean = true): void {
+    private updateAllClientsConfig(message: GenericConfig, ignoreSelf: boolean): void {
       this.webSocketService.send<GenericConfig>({
         topic: this.key(),
         payload: message,
@@ -72,4 +54,13 @@ export function Socketable<
     }
   };
 }
+
+interface SocketableInterface<GenericConfig extends BaseMessagePayload> {
+  listenTopic(): Observable<Message<GenericConfig>>;
+
+  updateConfiguration(configuration: Partial<GenericConfig>, ignoreSelf?: boolean): void;
+}
+
+export type WithSocketable<T extends { configuration: BaseMessagePayload }> =
+  T & SocketableInterface<T['configuration']>;
 

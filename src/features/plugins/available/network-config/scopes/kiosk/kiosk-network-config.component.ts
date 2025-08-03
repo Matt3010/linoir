@@ -1,5 +1,5 @@
 import {Component, input, InputSignal} from '@angular/core';
-import {NetworkConfigPluginWithMixins} from '../../../../entities';
+import {MixedNetworkConfigPlugin} from '../../../../entities';
 
 @Component({
   selector: 'lin-kiosk-network-config',
@@ -8,5 +8,5 @@ import {NetworkConfigPluginWithMixins} from '../../../../entities';
   styleUrl: './kiosk-network-config.component.css'
 })
 export class KioskNetworkConfigComponent {
-  public classInput: InputSignal<InstanceType<typeof NetworkConfigPluginWithMixins>> = input.required<InstanceType<typeof NetworkConfigPluginWithMixins>>();
+  public classInput: InputSignal<MixedNetworkConfigPlugin> = input.required<MixedNetworkConfigPlugin>();
 }

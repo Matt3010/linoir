@@ -47,21 +47,19 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
   public set configuration(configuration: GenericConfig) {
     configuration.lastUpdatedAt = new Date();
     localStorage.setItem(`${this.key()}`, JSON.stringify(configuration));
+    console.log(`Configuration for plugin ${this.key()} updated:`, configuration);
     this._configurationChangeEvent$.next();
   }
 
-
-  public resetConfiguration(): void {
-    this.configuration = this.defaultConfig;
-  }
-
-  // Automatically trigger re-rendering when configuration changes
   public get configuration(): GenericConfig {
     const storedMemoryJson: string = localStorage.getItem(`${this.key()}`)!;
     return JSON.parse(storedMemoryJson) as GenericConfig;
   }
 
-  // UI won't update automatically with this method, so we should need to manually trigger the re-rendering
+  public resetConfiguration(): void {
+    this.updateConfiguration(this.defaultConfig);
+  }
+
   public updateConfiguration(configuration: Partial<GenericConfig>): void {
     const nextConfiguration = {
       ...this.configuration,
@@ -77,10 +75,10 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
       try {
         const savedConfig: Partial<GenericConfig> = JSON.parse(savedConfigString);
 
-        this.configuration = {
+        this.updateConfiguration({
           ...this.defaultConfig,
           ...savedConfig,
-        };
+        });
       } catch (e) {
         console.warn(`Invalid config for plugin ${this.key()}, resetting to default.`, e);
         this.resetConfiguration();

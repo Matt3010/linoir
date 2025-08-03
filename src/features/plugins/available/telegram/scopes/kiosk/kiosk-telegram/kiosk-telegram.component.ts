@@ -1,8 +1,9 @@
 import {Component, input, InputSignal, OnDestroy, OnInit} from '@angular/core';
-import {TelegramPluginWithMixins} from '../../../../../entities';
 import {AuthComponent, TelegramLoginEventPayload} from './components/auth/auth.component';
 import {Message, WebsocketService} from '../../../../../../../common/services/websocket.service';
 import {Subscription} from 'rxjs';
+import {TelegramMessagePayload} from '../../../TelegramPlugin';
+import {MixedTelegramPlugin} from '../../../../../entities';
 
 @Component({
   selector: 'lin-kiosk-telegram',
@@ -13,7 +14,7 @@ import {Subscription} from 'rxjs';
   styleUrl: './kiosk-telegram.component.css'
 })
 export class KioskTelegramComponent implements OnInit, OnDestroy {
-  public classInput: InputSignal<InstanceType<typeof TelegramPluginWithMixins>> = input.required<InstanceType<typeof TelegramPluginWithMixins>>();
+  public classInput: InputSignal<MixedTelegramPlugin> = input.required<MixedTelegramPlugin>();
   private readonly subscription: Subscription = new Subscription(); // To manage subscriptions
 
   public constructor(
@@ -34,18 +35,15 @@ export class KioskTelegramComponent implements OnInit, OnDestroy {
     }
     this.webSockerService.send(loginRequest)
 
-    const loginSub = this.webSockerService.subscribeToLatestMessage<TelegramLoginEventPayload>('TelegramLoginEventPayload')
+    const loginSub: Subscription = this.webSockerService.subscribeToLatestMessage<TelegramLoginEventPayload>('TelegramLoginEventPayload')
       .subscribe((res: Message<TelegramLoginEventPayload>): void => {
-        const currentConfig = this.classInput().configuration;
-
+        console.log(`Received login event:`, res);
+        const currentConfig: TelegramMessagePayload = this.classInput().configuration;
         if (currentConfig.stringSession !== res.payload.stringSession || currentConfig.isLogged !== res.payload.isLogged) {
-          console.log('Configuration changed, updating...');
-          this.classInput().configuration = {
-            ...currentConfig,
+          this.classInput().updateConfiguration({
             stringSession: res.payload.stringSession,
-            isLogged: res.payload.isLogged,
-          };
-          this.classInput().updateAllClientsConfig(this.classInput().configuration)
+            isLogged: res.payload.isLogged
+          }, false);
         }
       });
 

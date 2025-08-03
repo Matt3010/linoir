@@ -26,14 +26,12 @@ function handleMessage(server: WSType, ws: WebSocket, data: string): void {
 
   console.log('Received text from client:', data);
 
-  // Prova a fare il parse del JSON per controllare i flag.
   try {
     const parsed: any = JSON.parse(data);
     if (parsed.ignoreSelf) {
       ignoreSelf = true;
     }
   } catch {
-    // Se il messaggio non è JSON valido, procedi comunque.
   }
 
   // Broadcast the message to all connected clients.

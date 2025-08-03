@@ -1,5 +1,5 @@
 import {Component, input, InputSignal} from '@angular/core';
-import {TelegramPluginWithMixins} from '../../../../../entities';
+import {MixedTelegramPlugin} from '../../../../../entities';
 
 @Component({
   selector: 'lin-dock-telegram',
@@ -8,6 +8,6 @@ import {TelegramPluginWithMixins} from '../../../../../entities';
   styleUrl: './dock-telegram.component.css'
 })
 export class DockTelegramComponent {
-  public classInput: InputSignal<InstanceType<typeof TelegramPluginWithMixins>> = input.required<InstanceType<typeof TelegramPluginWithMixins>>();
+  public classInput: InputSignal<MixedTelegramPlugin> = input.required<MixedTelegramPlugin>();
 
 }

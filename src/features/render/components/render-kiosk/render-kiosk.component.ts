@@ -3,7 +3,7 @@ import {PluginLoaderService} from '../../../plugins/services/plugin-loader.servi
 import {RenderType} from '../../enums/render-type';
 import {RouterOutlet} from '@angular/router';
 import {environment} from '../../../../environments/environment';
-import {PossiblePlugin} from '../../../plugins/entities';
+import {PossiblePlugins} from '../../../plugins/entities';
 
 @Component({
   selector: 'lin-render-preview',
@@ -33,7 +33,7 @@ import {PossiblePlugin} from '../../../plugins/entities';
 export class RenderKioskComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
   containers!: QueryList<ViewContainerRef>;
-  public activePlugins: PossiblePlugin[] = [];
+  public activePlugins: PossiblePlugins[] = [];
 
   private readonly renderType: RenderType = RenderType.Kiosk;
 
@@ -44,12 +44,12 @@ export class RenderKioskComponent implements AfterViewInit {
   }
 
   private filterAndRender(): void {
-    this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugin): boolean => p.configuration.kioskActive);
+    this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugins): boolean => p.configuration.kioskActive);
     if (this.activePlugins.length === 0) {
-      const networkPlugin: PossiblePlugin | undefined =
+      const networkPlugin: PossiblePlugins | undefined =
         this.pluginLoader
           .plugins
-          .find((pl: PossiblePlugin) => pl instanceof environment.fallbackAllDeactivated);
+          .find((pl: PossiblePlugins) => pl instanceof environment.fallbackAllDeactivated);
       if (networkPlugin) {
         networkPlugin.setKioskActive()
       }

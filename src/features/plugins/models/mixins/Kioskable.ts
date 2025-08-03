@@ -5,16 +5,25 @@ export function Kioskable<
   TBase extends Constructor<
     {
       configuration: GenericConfig;
-      setNewConfig<GenericConfig>(newProps: Partial<GenericConfig>): void;
+      updateConfiguration<GenericConfig>(newProps: Partial<GenericConfig>): void;
     }>
 >(Base: TBase) {
-  return class extends Base {
+  return class extends Base implements KioskableInterface {
     public toggleKiosk(): void {
-      this.setNewConfig({kioskActive: !this.configuration.kioskActive});
+      this.updateConfiguration({kioskActive: !this.configuration.kioskActive});
     }
 
     public setKioskActive(): void {
-      this.setNewConfig({kioskActive: true});
+      this.updateConfiguration({kioskActive: true});
     }
   };
 }
+
+interface KioskableInterface {
+  toggleKiosk(): void;
+
+  setKioskActive(): void;
+}
+
+export type WithKioskable<T extends { configuration: { kioskActive: boolean } }> =
+  T & KioskableInterface;
