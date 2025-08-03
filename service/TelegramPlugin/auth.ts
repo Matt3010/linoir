@@ -95,7 +95,7 @@ function sendMessage<T>(ws: WebSocket, topic: string, payload: T): void {
 }
 
 function sendLoginSuccess(ws: WebSocket, apiId: number, apiHash: string, session: string): void {
-  sendMessage<TelegramLoginEventPayload>(ws, "TelegramLoginEventPayload", {
+  sendMessage<TelegramLoginEventPayload>(ws, "TelegramPlugin:LoginEvent", {
     apiId,
     apiHash,
     stringSession: session,
@@ -105,7 +105,7 @@ function sendLoginSuccess(ws: WebSocket, apiId: number, apiHash: string, session
 
 
 function sendLoginFailure(ws: WebSocket, apiId: number, apiHash: string): void {
-  sendMessage<TelegramLoginEventPayload>(ws, "TelegramLoginEventPayload", {
+  sendMessage<TelegramLoginEventPayload>(ws, "TelegramPlugin:LoginEvent", {
     apiId,
     apiHash,
     stringSession: '',
@@ -119,7 +119,7 @@ function sendError(ws: WebSocket, error: string): void {
 
 function sendQrCode(ws: WebSocket, code: { token: Buffer }): Promise<void> {
   const tokenUrl = `tg://login?token=${code.token.toString("base64url")}`;
-  sendMessage<TelegramQrCodeTokenEventPayload>(ws, "TelegramPluginLoginQrCodeTokenUpdate", {
+  sendMessage<TelegramQrCodeTokenEventPayload>(ws, "TelegramPlugin:QrCodeTokenUpdate", {
     qrCodeToken: tokenUrl,
   });
   return Promise.resolve();
@@ -163,7 +163,7 @@ export async function loginWithSignInQr(
     ws.on("message", async (data: RawData) => {
       try {
         const parsed = JSON.parse(data.toString()) as Message<TelegramLoginEventPayload>;
-        if (parsed.topic !== "TelegramLoginEventPayload") return;
+        if (parsed.topic !== "TelegramPlugin:LoginEvent") return;
 
         await handleWebSocketMessage(
           ws,

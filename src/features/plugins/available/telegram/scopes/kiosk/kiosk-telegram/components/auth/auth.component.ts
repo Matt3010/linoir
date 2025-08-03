@@ -48,6 +48,6 @@ export class AuthComponent {
   }
 
   protected get qrCode(): Observable<Message<TelegramQrCodeTokenEventPayload>> {
-    return this.webSockerService.subscribeToLatestMessage<TelegramQrCodeTokenEventPayload>('TelegramPluginLoginQrCodeTokenUpdate');
+    return this.webSockerService.subscribeToLatestMessage<TelegramQrCodeTokenEventPayload>('TelegramPlugin:QrCodeTokenUpdate');
   }
 }

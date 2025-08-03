@@ -24,7 +24,7 @@ export class KioskTelegramComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     const loginRequest: Message<TelegramLoginEventPayload> = {
-      topic: "TelegramLoginEventPayload",
+      topic: "TelegramPlugin:LoginEvent",
       payload: {
         apiId: this.classInput().configuration.apiId,
         apiHash: this.classInput().configuration.apiHash,
@@ -35,7 +35,7 @@ export class KioskTelegramComponent implements OnInit, OnDestroy {
     }
     this.webSockerService.send(loginRequest)
 
-    const loginSub: Subscription = this.webSockerService.subscribeToLatestMessage<TelegramLoginEventPayload>('TelegramLoginEventPayload')
+    const loginSub: Subscription = this.webSockerService.subscribeToLatestMessage<TelegramLoginEventPayload>('TelegramPlugin:LoginEvent')
       .subscribe((res: Message<TelegramLoginEventPayload>): void => {
         console.log(`Received login event:`, res);
         const currentConfig: TelegramMessagePayload = this.classInput().configuration;
