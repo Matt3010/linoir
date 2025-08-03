@@ -7,3 +7,4 @@ handle sockets with multiple clients
 Check for leaks in the codebase
 Handle telegram errors
 check 2fa for telegram login
+Avoid render method of plugin.loader.service.ts to render again the component. If already rendered, just update the component
