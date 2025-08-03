@@ -3,7 +3,6 @@ import {StringSession} from "telegram/sessions";
 import WebSocket, {RawData, WebSocketServer} from "ws";
 import {Message} from "../websocket";
 
-// --- Interface Definitions (Invariate) ---
 
 interface TelegramLoginEventPayload {
   apiId: number;
@@ -30,6 +29,9 @@ interface TelegramQrCodeLoginErrorEventPayload {
 
 // --- Core Function ---
 
+let telegramClient: TelegramClient | null = null;
+
+
 async function handleWebSocketMessage(
   ws: WebSocket,
   apiId: number,
@@ -38,7 +40,8 @@ async function handleWebSocketMessage(
 ): Promise<void> {
   try {
     const stringSession = new StringSession(initialSession);
-    const telegramClient = new TelegramClient(stringSession, apiId, apiHash, {
+
+    telegramClient ??= new TelegramClient(stringSession, apiId, apiHash, {
       connectionRetries: 5,
     });
 
@@ -62,9 +65,9 @@ async function handleWebSocketMessage(
     const user = await telegramClient.signInUserWithQrCode(
       {apiId, apiHash},
       {
-        qrCode: (code) => sendQrCode(ws, code),
-        password: (hint) => waitForPassword(ws, hint),
-        onError: (err) => handleQrLoginError(ws, err),
+        qrCode: (code: { token: Buffer; expires: number }): Promise<void> => sendQrCode(ws, code),
+        password: (hint: string | undefined): Promise<string> => waitForPassword(ws, hint),
+        onError: (err: Error): Promise<boolean> => handleQrLoginError(ws, err),
       }
     );
 

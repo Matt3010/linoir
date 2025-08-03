@@ -11,11 +11,10 @@
   name="active"
   id="active"
   [ngModel]="classInput().configuration.backgroundColor"
-  (ngModelChange)="classInput().updateConfiguration({ backgroundColor: $event })"
+  (ngModelChange)="classInput().updateConfiguration({ backgroundColor: $event }, true)"
 />
 
 <button (click)="classInput().resetConfiguration()">Reset conf</button>
-
 
 <div class="row m-0">
   <input
@@ -24,7 +23,7 @@
     name="active"
     id="active"
     [ngModel]="classInput().configuration.apiId"
-    (ngModelChange)="classInput().updateConfiguration({ apiId: $event })"
+    (ngModelChange)="classInput().updateConfiguration({ apiId: $event }, true)"
   />
   <input
     class="col-6"
@@ -32,6 +31,6 @@
     name="active"
     id="active"
     [ngModel]="classInput().configuration.apiHash"
-    (ngModelChange)="classInput().updateConfiguration({ apiHash: $event })"
+    (ngModelChange)="classInput().updateConfiguration({ apiHash: $event }, true)"
   />
 </div>
