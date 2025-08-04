@@ -1,4 +1,4 @@
-name: Deploy Docker Compose
+name: Verify Hosts Validity
 
 on:
   push:
