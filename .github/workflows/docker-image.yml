@@ -21,10 +21,10 @@ jobs:
       run: sleep 10
 
     - name: Test frontend
-      run: curl -I http://localhost:9372 || true
+      run: curl -I http://localhost:8080 || true
 
     - name: Test service
-      run: curl -I http://localhost:3333 || true
+      run: curl -I ws://localhost:3333 || true
 
     - name: Stop containers
       if: always()
