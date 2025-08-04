@@ -17,14 +17,19 @@ jobs:
     - name: Run docker-compose
       run: docker compose up -d
 
-    - name: Wait for containers
-      run: sleep 10
-
     - name: Test frontend
-      run: curl -I http://localhost:8080 || true
+      run: |
+        if ! curl -I http://localhost:8080; then
+          echo "Frontend non risponde"
+          exit 1
+        fi
 
-    - name: Test service
-      run: curl -I ws://localhost:3333 || true
+    - name: Test WS service port
+      run: |
+        if ! nc -z localhost 3333; then
+          echo "WebSocket service not responding on port 3333"
+          exit 1
+        fi
 
     - name: Stop containers
       if: always()
