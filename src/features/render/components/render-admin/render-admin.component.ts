@@ -1,4 +1,12 @@
-import {AfterViewInit, Component, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  QueryList,
+  ViewChildren,
+  ViewContainerRef
+} from '@angular/core';
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 
@@ -10,7 +18,8 @@ import {RenderType} from '../../enums/render-type';
       <ng-template #pluginContainer></ng-template>
       <hr>
     }
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RenderAdminComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
@@ -18,14 +27,22 @@ export class RenderAdminComponent implements AfterViewInit {
 
   private readonly renderType: RenderType = RenderType.Admin;
 
-  constructor(protected readonly pluginLoader: PluginLoaderService) {
+  constructor(
+    protected readonly pluginLoader: PluginLoaderService,
+    private readonly cdr: ChangeDetectorRef
+  ) {
   }
 
   public ngAfterViewInit(): void {
     if (this.pluginContainers !== undefined) {
-      const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.pluginLoader.plugins, this.pluginContainers as QueryList<ViewContainerRef>, this.renderType).catch(console.error);
+      const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.pluginLoader.plugins, this.pluginContainers as QueryList<ViewContainerRef>, this.renderType
+      ).catch(console.error)
+        .then((): void => {
+            this.cdr.markForCheck();
+          }
+        );
       this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
-      renderCallback().then();
+      renderCallback();
     }
   }
 }

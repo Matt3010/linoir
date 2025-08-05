@@ -1,9 +1,17 @@
-import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  QueryList,
+  ViewChildren,
+  ViewContainerRef
+} from '@angular/core';
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 import {RouterOutlet} from '@angular/router';
 import {environment} from '../../../../environments/environment';
-import {PossiblePlugins} from '../../../plugins/entities';
+import {MixedTelegramPlugin, PossiblePlugins} from '../../../plugins/entities';
 
 @Component({
   selector: 'lin-render-preview',
@@ -28,7 +36,8 @@ import {PossiblePlugins} from '../../../plugins/entities';
         }
       }
     </div>
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RenderKioskComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
@@ -49,17 +58,21 @@ export class RenderKioskComponent implements AfterViewInit {
       const networkPlugin: PossiblePlugins | undefined =
         this.pluginLoader
           .plugins
-          .find((pl: PossiblePlugins) => pl instanceof environment.fallbackAllDeactivated);
+          .find((pl: PossiblePlugins): pl is MixedTelegramPlugin => pl instanceof environment.fallbackAllDeactivated);
       if (networkPlugin) {
         networkPlugin.setKioskActive()
       }
     }
-    this.cdr.detectChanges();
-    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType).catch(console.error);
+    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType)
+      .catch(console.error)
+      .then((): void => {
+          this.cdr.markForCheck();
+        }
+      );
   }
 
   public ngAfterViewInit(): void {
-    const renderCallback = (): void => this.filterAndRender();
+    const renderCallback: () => void = (): void => this.filterAndRender();
     this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
     renderCallback();
   }

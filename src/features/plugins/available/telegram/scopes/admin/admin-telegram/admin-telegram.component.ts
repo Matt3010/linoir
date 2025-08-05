@@ -1,4 +1,4 @@
-import {Component, input, InputSignal} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, InputSignal} from '@angular/core';
 import {FormsModule} from '@angular/forms';
 import {MixedTelegramPlugin} from '../../../../../entities';
 
@@ -8,7 +8,8 @@ import {MixedTelegramPlugin} from '../../../../../entities';
     FormsModule
   ],
   templateUrl: './admin-telegram.component.html',
-  styleUrl: './admin-telegram.component.css'
+  styleUrl: './admin-telegram.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class AdminTelegramComponent {
   public classInput: InputSignal<MixedTelegramPlugin> = input.required<MixedTelegramPlugin>();

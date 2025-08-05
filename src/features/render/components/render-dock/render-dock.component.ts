@@ -1,4 +1,12 @@
-import {AfterViewInit, ChangeDetectorRef, Component, QueryList, ViewChildren, ViewContainerRef} from '@angular/core';
+import {
+  AfterViewInit,
+  ChangeDetectionStrategy,
+  ChangeDetectorRef,
+  Component,
+  QueryList,
+  ViewChildren,
+  ViewContainerRef
+} from '@angular/core';
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 import {NgClass} from '@angular/common';
@@ -33,7 +41,8 @@ import {PossiblePlugins} from '../../../plugins/entities';
         height: 40px;
       }
     }
-  `
+  `,
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class RenderDockComponent implements AfterViewInit {
   @ViewChildren('pluginContainer', {read: ViewContainerRef})
@@ -50,8 +59,12 @@ export class RenderDockComponent implements AfterViewInit {
 
   private filterAndRender(): void {
     this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugins): boolean => p.configuration.dockActive);
-    this.cdr.detectChanges();
-    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType).catch(console.error);
+    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType)
+      .catch(console.error)
+      .then((): void => {
+          this.cdr.markForCheck();
+        }
+      );
   }
 
   public ngAfterViewInit(): void {

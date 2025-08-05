@@ -36,7 +36,7 @@ interface TelegramQrCodeLoginErrorEventPayload {
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
   templateUrl: './auth.component.html',
-  styleUrl: './auth.component.css'
+  styleUrl: './auth.component.css',
 })
 export class AuthComponent {
 

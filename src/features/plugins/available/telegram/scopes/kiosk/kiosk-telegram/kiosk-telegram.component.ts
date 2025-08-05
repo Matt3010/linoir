@@ -1,4 +1,4 @@
-import {Component, input, InputSignal, OnDestroy, OnInit} from '@angular/core';
+import {ChangeDetectionStrategy, Component, input, InputSignal, OnDestroy, OnInit} from '@angular/core';
 import {AuthComponent, TelegramLoginEventPayload} from './components/auth/auth.component';
 import {Message, WebsocketService} from '../../../../../../../common/services/websocket.service';
 import {Subscription} from 'rxjs';
@@ -11,7 +11,8 @@ import {MixedTelegramPlugin} from '../../../../../entities';
   imports: [
     AuthComponent
   ],
-  styleUrl: './kiosk-telegram.component.css'
+  styleUrl: './kiosk-telegram.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class KioskTelegramComponent implements OnInit, OnDestroy {
   public classInput: InputSignal<MixedTelegramPlugin> = input.required<MixedTelegramPlugin>();
