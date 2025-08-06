@@ -66,7 +66,7 @@ export class RenderKioskComponent implements AfterViewInit {
     this.pluginLoader.render(this.activePlugins, this.containers, this.renderType)
       .catch(console.error)
       .then((): void => {
-          this.cdr.markForCheck();
+          this.cdr.detectChanges();
         }
       );
   }
@@ -74,6 +74,5 @@ export class RenderKioskComponent implements AfterViewInit {
   public ngAfterViewInit(): void {
     const renderCallback: () => void = (): void => this.filterAndRender();
     this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
-    renderCallback();
   }
 }

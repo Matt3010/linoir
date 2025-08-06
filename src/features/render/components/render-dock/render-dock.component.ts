@@ -61,15 +61,13 @@ export class RenderDockComponent implements AfterViewInit {
     this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugins): boolean => p.configuration.dockActive);
     this.pluginLoader.render(this.activePlugins, this.containers, this.renderType)
       .catch(console.error)
-      .then((): void => {
-          this.cdr.markForCheck();
-        }
-      );
+      .then(() => {
+        this.cdr.detectChanges();
+      });
   }
 
   public ngAfterViewInit(): void {
     const renderCallback = (): void => this.filterAndRender();
     this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
-    renderCallback();
   }
 }

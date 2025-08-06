@@ -23,7 +23,7 @@ export class KioskTelegramComponent implements OnInit, OnDestroy {
   ) {
   }
 
-  ngOnInit(): void {
+  public ngOnInit(): void {
     const loginRequest: Message<TelegramLoginEventPayload> = {
       topic: "TelegramPlugin:LoginEvent",
       payload: {
@@ -51,7 +51,7 @@ export class KioskTelegramComponent implements OnInit, OnDestroy {
     this.subscription.add(loginSub);
   }
 
-  ngOnDestroy() {
+  public ngOnDestroy() {
     this.subscription.unsubscribe();
   }
 }

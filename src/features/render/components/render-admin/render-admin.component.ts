@@ -38,11 +38,10 @@ export class RenderAdminComponent implements AfterViewInit {
       const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.pluginLoader.plugins, this.pluginContainers as QueryList<ViewContainerRef>, this.renderType
       ).catch(console.error)
         .then((): void => {
-            this.cdr.markForCheck();
+            this.cdr.detectChanges();
           }
         );
       this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
-      renderCallback();
     }
   }
 }
