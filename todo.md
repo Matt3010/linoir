@@ -8,3 +8,4 @@
 - [ ] Handle sockets with multiple clients
 - [ ] Handle telegram errors
 - [ ] Check 2FA for telegram login
+- [ ] Render components as kiosk renders plugins N times X clients (), (configuration change event should pass configuration changed and should use distinctUntilChanged)
