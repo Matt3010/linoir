@@ -1,5 +1,4 @@
 import {WebsocketService} from '../../../common/services/websocket.service';
-import {Observable, Subject} from 'rxjs';
 import {RenderType} from '../../render/enums/render-type';
 import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities';
 
@@ -7,8 +6,6 @@ import {BaseMessagePayload, PluginManifest, PluginVariant} from '../entities';
 export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = BaseMessagePayload> {
 
   private readonly _variants: Map<RenderType, PluginVariant> = new Map<RenderType, PluginVariant>();
-  private readonly _configurationChangeEvent$: Subject<void> = new Subject<void>();
-  public readonly configurationChangeEvent: Observable<void> = this._configurationChangeEvent$.asObservable();
   public readonly webSocketService: WebsocketService;
   public readonly defaultConfig: GenericConfig = {
     kioskActive: true,
@@ -31,24 +28,14 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
 
   protected constructor(
     private readonly manifest: PluginManifest,
-    webSocketService: WebsocketService
+    private readonly _webSocketService: WebsocketService
   ) {
-    // setTimeout is used to ensure that the configuration is initialized after the component is created
-    setTimeout((): void => {
-      this.initOrMergeConfiguration();
-    });
-    this.webSocketService = webSocketService;
+    this.initOrMergeConfiguration();
+    this.webSocketService = _webSocketService;
   }
 
   public addVariant(scope: RenderType, variant: PluginVariant): void {
     this._variants.set(scope, variant);
-  }
-
-  public set configuration(configuration: GenericConfig) {
-    configuration.lastUpdatedAt = new Date();
-    localStorage.setItem(`${this.key()}`, JSON.stringify(configuration));
-    console.log(`Configuration for plugin ${this.key()} updated:`, configuration);
-    this._configurationChangeEvent$.next();
   }
 
   public get configuration(): GenericConfig {
@@ -69,7 +56,7 @@ export abstract class BasePlugin<GenericConfig extends BaseMessagePayload = Base
     localStorage.setItem(`${this.key()}`, JSON.stringify(nextConfiguration));
   }
 
-  private initOrMergeConfiguration(): void {
+  public initOrMergeConfiguration(): void {
     const savedConfigString: string | null = localStorage.getItem(`${this.key()}`);
     if (savedConfigString) {
       try {

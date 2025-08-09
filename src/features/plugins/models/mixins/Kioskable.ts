@@ -6,15 +6,16 @@ export function Kioskable<
     {
       configuration: GenericConfig;
       updateConfiguration<GenericConfig>(newProps: Partial<GenericConfig>): void;
+      updateConfiguration<GenericConfig>(newProps: Partial<GenericConfig>, ignoreSelf: boolean): void;
     }>
 >(Base: TBase) {
   return class extends Base implements KioskableInterface {
-    public toggleKiosk(): void {
-      this.updateConfiguration({kioskActive: !this.configuration.kioskActive});
+    public toggleKiosk(ignoreSelf: boolean = false): void {
+      this.updateConfiguration({kioskActive: !this.configuration.kioskActive}, ignoreSelf);
     }
 
-    public setKioskActive(): void {
-      this.updateConfiguration({kioskActive: true});
+    public setKioskActive(ignoreSelf: boolean = false): void {
+      this.updateConfiguration({kioskActive: true}, ignoreSelf);
     }
   };
 }

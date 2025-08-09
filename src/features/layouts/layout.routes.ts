@@ -42,20 +42,7 @@ export const LAYOUT_ROUTES: Routes = [
         },
         data: {
           scope: RenderType.Admin,
-        },
-        children: [
-          {
-            path: '',
-            loadComponent: () =>
-              import('../render/pages/render-container/render-container.component').then(m => m.RenderContainerComponent),
-            resolve: {
-              hostComponent: RenderResolver
-            },
-            data: {
-              scope: RenderType.Kiosk,
-            },
-          }
-        ]
+        }
       },
     ]
   },

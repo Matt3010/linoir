@@ -22,7 +22,7 @@ import {PossiblePlugins} from '../../../plugins/entities';
     <div [ngClass]="{
       'small-height': activePlugins.length === 0,
       'normal-height': activePlugins.length > 0
-    }" class="ps-3 py-2 pe-2 dock-container rounded-4 bg-primary">
+    }" class="ps-3 py-2 pe-2 dock-container rounded-4 bg-primary d-flex">
       @for (plugin of activePlugins; track plugin.configuration) {
         <ng-template #pluginContainer></ng-template>
       }
@@ -59,15 +59,11 @@ export class RenderDockComponent implements AfterViewInit {
 
   private filterAndRender(): void {
     this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugins): boolean => p.configuration.dockActive);
-    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType)
-      .catch(console.error)
-      .then(() => {
-        this.cdr.detectChanges();
-      });
+    this.cdr.detectChanges();
+    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType).then()
   }
 
   public ngAfterViewInit(): void {
-    const renderCallback = (): void => this.filterAndRender();
-    this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
+    this.pluginLoader.initializeConfigurationChangeListeners(() => this.filterAndRender());
   }
 }

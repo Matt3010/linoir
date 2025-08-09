@@ -6,11 +6,12 @@ export function Dockable<
     {
       configuration: GenericConfig;
       updateConfiguration<GenericConfig>(newProps: Partial<GenericConfig>): void;
+      updateConfiguration<GenericConfig>(newProps: Partial<GenericConfig>, ignoreSelf: boolean): void;
     }>
 >(Base: TBase) {
   return class extends Base implements DockableInterface {
-    public toggleDock(): void {
-      this.updateConfiguration({dockActive: !this.configuration.dockActive});
+    public toggleDock(ignoreSelf: boolean = false): void {
+      this.updateConfiguration({dockActive: !this.configuration.dockActive}, ignoreSelf);
     }
   };
 }

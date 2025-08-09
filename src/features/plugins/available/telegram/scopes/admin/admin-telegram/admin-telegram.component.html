@@ -1,10 +1,10 @@
 <p>TELEGRAM</p>
 <p>Toggle kiosk</p>
 <input type="checkbox" name="active" id="kioskActive" [checked]="classInput().configuration.kioskActive"
-       (click)="classInput().toggleKiosk()" (keydown)="classInput().toggleKiosk()">
+       (click)="classInput().toggleKiosk(true)" (keydown)="classInput().toggleKiosk(true)">
 <p>Toggle dock</p>
 <input type="checkbox" name="active" id="dockActive" [checked]="classInput().configuration.dockActive"
-       (click)="classInput().toggleDock()" (keydown)="classInput().toggleDock()">
+       (click)="classInput().toggleDock(true)" (keydown)="classInput().toggleDock(true)">
 <p>BG-color</p>
 <input
   type="color"

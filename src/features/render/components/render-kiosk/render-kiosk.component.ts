@@ -10,8 +10,7 @@ import {
 import {PluginLoaderService} from '../../../plugins/services/plugin-loader.service';
 import {RenderType} from '../../enums/render-type';
 import {RouterOutlet} from '@angular/router';
-import {environment} from '../../../../environments/environment';
-import {MixedTelegramPlugin, PossiblePlugins} from '../../../plugins/entities';
+import {PossiblePlugins} from '../../../plugins/entities';
 
 @Component({
   selector: 'lin-render-preview',
@@ -54,25 +53,11 @@ export class RenderKioskComponent implements AfterViewInit {
 
   private filterAndRender(): void {
     this.activePlugins = this.pluginLoader.plugins.filter((p: PossiblePlugins): boolean => p.configuration.kioskActive);
-    if (this.activePlugins.length === 0) {
-      const networkPlugin: PossiblePlugins | undefined =
-        this.pluginLoader
-          .plugins
-          .find((pl: PossiblePlugins): pl is MixedTelegramPlugin => pl instanceof environment.fallbackAllDeactivated);
-      if (networkPlugin) {
-        networkPlugin.setKioskActive()
-      }
-    }
-    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType)
-      .catch(console.error)
-      .then((): void => {
-          this.cdr.detectChanges();
-        }
-      );
+    this.cdr.detectChanges();
+    this.pluginLoader.render(this.activePlugins, this.containers, this.renderType).then()
   }
 
   public ngAfterViewInit(): void {
-    const renderCallback: () => void = (): void => this.filterAndRender();
-    this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
+    this.pluginLoader.initializeConfigurationChangeListeners(() => this.filterAndRender());
   }
 }

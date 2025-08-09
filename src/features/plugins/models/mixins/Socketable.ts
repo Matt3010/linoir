@@ -1,6 +1,7 @@
 import {Observable} from 'rxjs';
 import {Message, WebsocketService} from '../../../../common/services/websocket.service';
 import {BaseMessagePayload, Constructor} from '../../entities';
+import _ from 'lodash';
 
 /**
  * A mixin function that adds WebSocket-related functionality to a base class.
@@ -20,14 +21,16 @@ export function Socketable<
     updateConfiguration(configuration: Partial<GenericConfig>): void;
     resetConfiguration(): void;
     defaultConfig: GenericConfig;
+    initOrMergeConfiguration(): void
   }>
 >(Base: TBase) {
   return class extends Base implements SocketableInterface<GenericConfig> {
 
     public constructor(...args: any[]) {
       super(...args);
+      this.initOrMergeConfiguration();
       this.listenTopic().subscribe((res: Message<GenericConfig>): void => {
-        this.configuration = res.payload;
+        this.updateConfiguration(res.payload);
       });
     }
 
@@ -41,8 +44,14 @@ export function Socketable<
         ...configuration,
         lastUpdatedAt: new Date(),
       };
-      localStorage.setItem(`${this.key()}`, JSON.stringify(nextConfiguration));
-      this.updateAllClientsConfig(this.configuration, ignoreSelf);
+
+      const currentConfigFiltered = _.omit(this.configuration, ['lastUpdatedAt']);
+      const nextConfigFiltered = _.omit(nextConfiguration, ['lastUpdatedAt']);
+
+      if (!_.isEqual(currentConfigFiltered, nextConfigFiltered)) {
+        localStorage.setItem(`${this.key()}`, JSON.stringify(nextConfiguration));
+        this.updateAllClientsConfig(nextConfiguration, ignoreSelf);
+      }
     }
 
     private updateAllClientsConfig(message: GenericConfig, ignoreSelf: boolean): void {
@@ -52,6 +61,26 @@ export function Socketable<
         ignoreSelf, // Prevents the message from being sent back to the same client,
       });
     }
+
+    public override initOrMergeConfiguration(): void {
+      const savedConfigString: string | null = localStorage.getItem(`${this.key()}`);
+      if (savedConfigString) {
+        try {
+          const savedConfig: Partial<GenericConfig> = JSON.parse(savedConfigString);
+
+          this.updateConfiguration({
+            ...this.defaultConfig,
+            ...savedConfig,
+          });
+        } catch (e) {
+          console.warn(`Invalid config for plugin ${this.key()}, resetting to default.`, e);
+          this.resetConfiguration();
+        }
+      } else {
+        this.resetConfiguration();
+      }
+    }
+
   };
 }
 

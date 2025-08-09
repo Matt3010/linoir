@@ -1,7 +1,6 @@
 import {
   AfterViewInit,
   ChangeDetectionStrategy,
-  ChangeDetectorRef,
   Component,
   QueryList,
   ViewChildren,
@@ -29,19 +28,16 @@ export class RenderAdminComponent implements AfterViewInit {
 
   constructor(
     protected readonly pluginLoader: PluginLoaderService,
-    private readonly cdr: ChangeDetectorRef
   ) {
   }
 
-  public ngAfterViewInit(): void {
+  private render() {
     if (this.pluginContainers !== undefined) {
-      const renderCallback: () => Promise<void> = (): Promise<void> => this.pluginLoader.render(this.pluginLoader.plugins, this.pluginContainers as QueryList<ViewContainerRef>, this.renderType
-      ).catch(console.error)
-        .then((): void => {
-            this.cdr.detectChanges();
-          }
-        );
-      this.pluginLoader.initializeConfigurationChangeListeners(renderCallback);
+      this.pluginLoader.render(this.pluginLoader.plugins, this.pluginContainers, this.renderType).then();
     }
+  }
+
+  public ngAfterViewInit(): void {
+    this.pluginLoader.initializeConfigurationChangeListeners(() => this.render());
   }
 }

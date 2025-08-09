@@ -3,6 +3,7 @@ import {WebsocketService} from '../../../common/services/websocket.service';
 import {RenderType} from '../../render/enums/render-type';
 import {PluginManifest, PluginVariant, PossiblePlugins} from '../entities';
 import {PLUGINS} from '../utils/plugins.manifest';
+import {startWith} from 'rxjs';
 
 interface LoadedAngularComponentWithPluginClass {
   component: Type<unknown>;
@@ -87,12 +88,10 @@ export class PluginLoaderService {
    */
   public initializeConfigurationChangeListeners(callback: () => void | Promise<void>): void {
     this.plugins.forEach((plugin: PossiblePlugins): void => {
-      plugin.configurationChangeEvent.subscribe((): void => {
-        if (callback) {
-          requestAnimationFrame(() => {
-            callback();
-          });
-        }
+      plugin.listenTopic().pipe(
+        startWith(null)
+      ).subscribe((): void => {
+        callback();
       });
     });
   }
